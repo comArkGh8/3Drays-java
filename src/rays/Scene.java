@@ -21,7 +21,7 @@ public class Scene {
         
         // start up the objectsHash (maps identifier to object)
         // later build immutable Map of Entries
-        Map<Integer, Primitives> emptyMap = new HashMap<>();
+        Map<Integer, Primitive> emptyMap = new HashMap<>();
 
         // read in scene setup from file
         // use try with resources for buffered reader
