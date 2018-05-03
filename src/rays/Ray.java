@@ -3,25 +3,17 @@
 
 package rays;
 
-import org.joml.Vector3d;
+import org.joml.*;
 
 public class Ray {
     
-    FixedVector start;
-    FixedVector direction;
+    Vector3fc start;
+    Vector3fc direction;
     
-    public Ray(Vector3d startVector, Vector3d directionVector) {
-        float startX = (float) startVector.x;
-        float startY = (float) startVector.y;
-        float startZ = (float) startVector.z;
+    public Ray(Vector3f startVector, Vector3f directionVector) {
         
-        this.start = new FixedVector(startX, startY, startZ);
-
-        float dirX = (float) directionVector.x;
-        float dirY = (float) directionVector.y;
-        float dirZ = (float) directionVector.z;
-        
-        this.direction = new FixedVector(dirX, dirY, dirZ);
+        this.start = new Vector3f(startVector);     
+        this.direction = new Vector3f(directionVector);
 
     }
 

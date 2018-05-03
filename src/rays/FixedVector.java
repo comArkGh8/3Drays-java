@@ -23,6 +23,13 @@ public class FixedVector {
         this.z = v.z;
       }
     
+    // creates fixedVector from a vector3fc
+    public FixedVector(Vector3fc v) {
+        this.x = v.x();
+        this.y = v.y();
+        this.z = v.z();
+      }
+    
     // simple operations
     public FixedVector addFixed(FixedVector v) {
         return new FixedVector(x + v.x, y + v.y, z + v.z);
