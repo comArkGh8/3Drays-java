@@ -94,14 +94,13 @@ public class Scene {
         try(BufferedReader bufRead = new BufferedReader(new FileReader(fileToRead))){
 
             String myLine = null;
-            String[] cmdVals;
-            // sizeX= Integer.parseInt(dimensionsString[0]);
-             
+            String[] cmdVals;                     
             
             // now read the lines
-            while ((myLine = bufRead.readLine().trim()) !=null){
+            while ((myLine = bufRead.readLine()) !=null ){
+                myLine.trim();
                 
-                if( !(myLine.startsWith("#")) ) {
+                if( !(myLine.startsWith("#")) && (myLine.length()!=0) ) {
                     // Ruled out comment and blank lines
                     
                     boolean validinput;
@@ -165,6 +164,7 @@ public class Scene {
                         }
                         
                     case "ambient":
+                        out.println(cmd);
                         validinput = readvals(cmdVals, 4);
                         if (validinput) {
                             for (int i = 0; i < 3; i++) {
@@ -220,6 +220,7 @@ public class Scene {
                         if (validinput) {
                             // create a triangle with own function
                             // use values to get each vertex
+                            out.println(cmdVals[0]);
                             int indexFirstVertex = Integer.parseInt(cmdVals[1]);
                             int indexSecondVertex = Integer.parseInt(cmdVals[2]);
                             int indexThirdVertex = Integer.parseInt(cmdVals[3]);
