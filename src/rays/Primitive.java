@@ -24,7 +24,7 @@ public abstract class Primitive {
         return this.objectMatrix;
     }
     
-    protected abstract FixedVector getNormalAt(FixedVector point);
+    //protected abstract FixedVector getNormalAt(FixedVector point);
     
     // TO ADD
     // public abstract boolean rayHits(Ray aRay);

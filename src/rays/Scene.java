@@ -2,17 +2,16 @@ package rays;
 
 import static java.lang.System.out;
 
+import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.locks.ReentrantLock;
 
 import org.joml.*;
 import org.joml.Math;
@@ -69,9 +68,8 @@ public class Scene {
         atten = Arrays.asList((float) 1.0, (float) 0, (float) 0);
         
         maxDepth = 5;
-
         
-        String nameOfFile = file.getName();
+        //String nameOfFile = file.getName();
         String path = file.getAbsolutePath();
         File fileToRead = new File(path);  
         
@@ -95,7 +93,6 @@ public class Scene {
         // use try with resources for buffered reader
         try(BufferedReader bufRead = new BufferedReader(new FileReader(fileToRead))){
 
-            int rowTracker =0;
             String myLine = null;
             String[] cmdVals;
             // sizeX= Integer.parseInt(dimensionsString[0]);
@@ -213,7 +210,7 @@ public class Scene {
                             float readVectorZ = Float.parseFloat(cmdVals[3]);
                             
                             // take a vertex as a vector
-                            Vector3fc readVector=  new Vector3f(readVectorX, readVectorY, readVectorX);
+                            Vector3fc readVector=  new Vector3f(readVectorX, readVectorY, readVectorZ);
                             // enter into list
                             verticesList.add(readVector);
                         }  
@@ -318,89 +315,50 @@ public class Scene {
                             float colorR = Float.parseFloat(cmdVals[4]);
                             float colorG = Float.parseFloat(cmdVals[5]);
                             float colorB = Float.parseFloat(cmdVals[6]);
-
-                            // IM HERE!!! what to do about color ????!!!!!!!!1
-
-                        }                       
+                            Color dirColor = new Color(colorR, colorG, colorB);
+                            
+                            // create light and add to list
+                            Light readDirLight = new DirectionalLight(directionVec, dirColor);
+                            numLights++;
+                            lightIdMap.put(numLights, readDirLight);
+                        }    
                         
-/**
- * 
-
-
-                // now do lights
-                // Make use of "light"Posn[] and "light"Color[] arrays in variables.h
-                else if (cmd == "directional") {
-                    validinput = readvals(s, 6, values);
-                    if (validinput) {
-                        for(i=0; i<3; i++){
-                            dirPosn.push_back(values[i]);
-                        }
-
-                        for(i=0; i<3; i++){
-                            dirColor.push_back(values[i+3]);
-                        }
-                        numDirLights++;
-                    }
-                }
-                else if (cmd == "point") {
-                    validinput = readvals(s, 6, values);
-                    if (validinput) {
-                        for(i=0; i<3; i++){
-                            pointPosn.push_back(values[i]);
-                        }
-
-                        for(i=0; i<3; i++){
-                            pointColor.push_back(values[i+3]);
-                        }
-                        numPtLights++;
-                    }
-                }
-                else if (cmd == "attenuation") {
-                    validinput = readvals(s, 3, values);
-                    if (validinput) {
-                        for (i = 0; i < 3; i++) {
-                            atten[i] = values[i];
-                        }
-                    }
-                }
- * 
- * 
- * 
- * 
- */
-
+                    case "point":
+                        validinput = readvals(cmdVals, 7);
+                        if (validinput) {
+                            // values[1..3] are the poition of the source, others are color.
+                            float posX = Float.parseFloat(cmdVals[1]);
+                            float posY = Float.parseFloat(cmdVals[2]);
+                            float posZ = Float.parseFloat(cmdVals[3]);
+                            FixedVector positionVec= new FixedVector(posX, posY, posZ);
+                            
+                            float colorR = Float.parseFloat(cmdVals[4]);
+                            float colorG = Float.parseFloat(cmdVals[5]);
+                            float colorB = Float.parseFloat(cmdVals[6]);
+                            Color dirColor = new Color(colorR, colorG, colorB);
+                            
+                            // create light and add to list
+                            Light readPtLight = new PointLight(positionVec, dirColor);
+                            numLights++;
+                            lightIdMap.put(numLights, readPtLight);
+                        }  
+                        
+                    case "attenuation":
+                        validinput = readvals(cmdVals, 4);
+                        if (validinput) {
+                            for (int i = 0; i < 3; i++) {
+                                atten.set( i, Float.parseFloat(cmdVals[i+1]) );
+                            }
+                        }                        
                     
                     }
-                    
-                    
-                    
-                    
-                    
 
-
-                    }
                 }
                 
-                for (int columnIndex = 0; columnIndex < sizeX; columnIndex++){    
-                    this.squaresMap.putIfAbsent(sizeX*rowTracker+columnIndex, 
-                            new Square(valueOfSquareString[columnIndex]));
-                }
-                rowTracker++;
             }
+            
         }
-        
-        // now start up the locks
-        // divideGroups gives a mapping to groups
-        Map <Integer,Set<Integer>> lockToGroupMap = divideGroups();
-        this.lockNumberForGroup = lockToGroupMap;
-        
-        // now for each value in the numbering (of Groups)
-        // associate one lock
-        Map<Integer,ReentrantLock> mapForLocks= new HashMap<Integer, ReentrantLock>();
-        for (int key:lockToGroupMap.keySet()) {
-            mapForLocks.put(key, new ReentrantLock());
-        }
-        this.locks=mapForLocks;
+
     }  
 
 }
