@@ -99,16 +99,19 @@ public class Scene {
             // now read the lines
             while ((myLine = bufRead.readLine()) !=null ){
                 myLine.trim();
+                cmdVals = myLine.split(" ");
+                String cmd = cmdVals[0];
                 
                 if( !(myLine.startsWith("#")) && (myLine.length()!=0) ) {
                     // Ruled out comment and blank lines
+
                     
                     boolean validinput;
                 
                     // process the line
                     cmdVals = myLine.split(" ");
                     // check which command
-                    String cmd = cmdVals[0];
+                    //String cmd = cmdVals[0];
                     
                     switch (cmd) {
                     // sets size
@@ -118,6 +121,7 @@ public class Scene {
                             width = Integer.parseInt(cmdVals[1]); 
                             height = Integer.parseInt(cmdVals[2]);
                         }
+                        break;
                         
                     // sets number of bounces (if not default 5);
                     case "maxdepth":
@@ -125,12 +129,14 @@ public class Scene {
                         if (validinput) {
                             maxDepth = Integer.parseInt(cmdVals[1]);
                         }
+                        break;
                     
                     case "output":
                         validinput = readvals(cmdVals,2);
                         if (validinput) {
                             outputName =  cmdVals[1];
                         }
+                        break;
                    
                     case "camera":
                         validinput = readvals(cmdVals,11); // 10 values eye cen up fov
@@ -162,15 +168,17 @@ public class Scene {
                             // make the scene camera
                             sceneCam = new Camera(eyeInit, center, origup, fovy);
                         }
+                        break;
                         
                     case "ambient":
-                        out.println(cmd);
                         validinput = readvals(cmdVals, 4);
                         if (validinput) {
                             for (int i = 0; i < 3; i++) {
                                 ambient.set( i, Float.parseFloat(cmdVals[i+1]) );
                             }
                         }
+                        break;
+                        
                     case "diffuse":
                         validinput = readvals(cmdVals, 4);
                         if (validinput) {
@@ -178,29 +186,37 @@ public class Scene {
                                 diffuse.set( i, Float.parseFloat(cmdVals[i+1]) );
                             }
                         }
+                        break;
+                        
                     case "specular":
                         validinput = readvals(cmdVals, 4);
                         if (validinput) {
                             for (int i = 0; i < 3; i++) {
                                 specular.set( i, Float.parseFloat(cmdVals[i+1]) );
                             }
-                        }  
+                        } 
+                        break;
+                        
                     case "emission":
                         validinput = readvals(cmdVals, 4);
                         if (validinput) {
                             for (int i = 0; i < 3; i++) {
                                 emission.set( i, Float.parseFloat(cmdVals[i+1]) );
                             }
-                        }                        
+                        } 
+                        break;
+                        
                     case "shininess":
                         validinput = readvals(cmdVals, 2);
                         if (validinput) {
                             shininess = Float.parseFloat(cmdVals[1]);
                         }
+                        break;
                     
                      // tri v1,v2,v3 sets triangle with verts, counter-clockwise order
                     case "maxverts":
                         // ignore
+                        break;
                         
                     case "vertex":
                         validinput = readvals(cmdVals, 4);
@@ -213,14 +229,14 @@ public class Scene {
                             Vector3fc readVector=  new Vector3f(readVectorX, readVectorY, readVectorZ);
                             // enter into list
                             verticesList.add(readVector);
-                        }  
+                        }
+                        break;
                     
                     case "tri":
                         validinput = readvals(cmdVals, 4);
                         if (validinput) {
                             // create a triangle with own function
                             // use values to get each vertex
-                            out.println(cmdVals[0]);
                             int indexFirstVertex = Integer.parseInt(cmdVals[1]);
                             int indexSecondVertex = Integer.parseInt(cmdVals[2]);
                             int indexThirdVertex = Integer.parseInt(cmdVals[3]);
@@ -238,7 +254,8 @@ public class Scene {
                                     ambient, diffuse, specular, emission, shininess, triMatrix);
                                     
                             objectIdMap.put(numObjects, triToAdd);
-                        }                        
+                        }
+                        break;
                     
                     case "sphere":
                         validinput = readvals(cmdVals, 5);
@@ -263,7 +280,8 @@ public class Scene {
                                     ambient, diffuse, specular, emission, shininess, sphMatrix);
                                     
                             objectIdMap.put(numObjects, sphToAdd);
-                        }    
+                        } 
+                        break;
                         
                     case "translate":
                         validinput = readvals(cmdVals, 4);
@@ -274,7 +292,8 @@ public class Scene {
                             float transZ = Float.parseFloat(cmdVals[3]);
                             // translate at the top
                             matTransStack.translate(transX, transY, transZ);
-                        }  
+                        } 
+                        break;
                         
                     case "scale":
                         validinput = readvals(cmdVals, 4);
@@ -284,7 +303,8 @@ public class Scene {
                             float scaleY = Float.parseFloat(cmdVals[2]);
                             float scaleZ = Float.parseFloat(cmdVals[3]);
                             matTransStack.scale(scaleX, scaleY, scaleZ);
-                        }    
+                        } 
+                        break;
                       
                     case "rotate":
                         validinput = readvals(cmdVals, 5);
@@ -296,13 +316,16 @@ public class Scene {
                             float rotAngle = Float.parseFloat(cmdVals[4]);
                             
                             matTransStack.rotate((float) Math.toRadians(rotAngle), rotAxisX, rotAxisY, rotAxisZ);
-                        }      
+                        } 
+                        break;
                         
                         // basic push/pop code for matrix stacks
                     case "pushTransform":
                         matTransStack.pushMatrix(); 
+                        break;
                     case "popTransform":
                         matTransStack.popMatrix(); 
+                        break;
                         
                     case "directional":
                         validinput = readvals(cmdVals, 7);
@@ -322,7 +345,8 @@ public class Scene {
                             Light readDirLight = new DirectionalLight(directionVec, dirColor);
                             numLights++;
                             lightIdMap.put(numLights, readDirLight);
-                        }    
+                        } 
+                        break;
                         
                     case "point":
                         validinput = readvals(cmdVals, 7);
@@ -342,7 +366,8 @@ public class Scene {
                             Light readPtLight = new PointLight(positionVec, dirColor);
                             numLights++;
                             lightIdMap.put(numLights, readPtLight);
-                        }  
+                        } 
+                        break;
                         
                     case "attenuation":
                         validinput = readvals(cmdVals, 4);
@@ -350,7 +375,8 @@ public class Scene {
                             for (int i = 0; i < 3; i++) {
                                 atten.set( i, Float.parseFloat(cmdVals[i+1]) );
                             }
-                        }                        
+                        }
+                        break;
                     
                     }
 
