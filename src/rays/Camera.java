@@ -7,14 +7,14 @@ import java.util.List;
 import org.joml.Vector3f;
 
 public class Camera {
-    FixedVector camEye;
+    public FixedVector camEye;
     FixedVector camToCenter;
     FixedVector camUpVector;
     
     // make as unmodifiable
-    List<FixedVector> camFrame;
+    public List<FixedVector> camFrame;
     
-    final float fovy;
+    public final float fovy;
     
     
     // init Camera

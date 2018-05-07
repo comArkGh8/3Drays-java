@@ -14,6 +14,10 @@ public class DirectionalLight implements Light{
             this.lightColor = color;
             
         }
+        
+        public final Type getType(){
+            return this.lightSource;
+        }
 
 
     }

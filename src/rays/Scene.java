@@ -9,7 +9,9 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -19,25 +21,25 @@ import org.joml.Math;
 
 public class Scene {
     
-    int width;
-    int height;
+    public int width;
+    public int height;
 
-    Camera sceneCam;
+    public Camera sceneCam;
     
     // initialize ambient diffuse, etc.
-    List<Float> ambient;
-    List<Float> diffuse;
-    List<Float> specular;
-    List<Float> emission;
-    float shininess;
+    private List<Float> ambient;
+    private List<Float> diffuse;
+    private List<Float> specular;
+    private List<Float> emission;
+    private float shininess;
     
-    List<Float> atten;
+    public List<Float> atten;
 
     // make map of primitiveObjects id->Object
-    public Map<Integer,Primitive> objectIdMap;
+    public Map<Integer,Primitive> objectIdMapFinal;
     
     // make map of lights id->Light
-    public Map<Integer,Light> lightIdMap;
+    public Map<Integer,Light> lightIdMapFinal;
     
     String outputName;
     int maxDepth;
@@ -76,8 +78,8 @@ public class Scene {
         
         // start up the objectsHash (maps identifier to object) and lightMap
         // later build immutable Map of Entries
-        objectIdMap = new HashMap();
-        lightIdMap = new HashMap();
+        Map<Integer,Primitive> objectIdMap = new HashMap();
+        Map<Integer,Light> lightIdMap = new HashMap();
         int numObjects = 0;
         int numLights = 0;
         // can check if numObjects = length of IdMap!
@@ -86,7 +88,7 @@ public class Scene {
         List<Vector3fc> verticesList = new ArrayList<Vector3fc>();
         
         // start the stack with the identity
-        Matrix4fStack matTransStack = new Matrix4fStack(2);
+        Matrix4fStack matTransStack = new Matrix4fStack(3);
         matTransStack.clear();
 
         // read in scene setup from file
@@ -382,7 +384,13 @@ public class Scene {
 
                 }
                 
-            }
+            } // end reading file
+            // now create immutable map
+            this.objectIdMapFinal = 
+                    Collections.unmodifiableMap(objectIdMap);
+            this.lightIdMapFinal = 
+                    Collections.unmodifiableMap(lightIdMap);
+            
             
         }
 

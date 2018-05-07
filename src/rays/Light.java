@@ -6,6 +6,7 @@ public interface Light {
         POINT, DIRECTIONAL
     }
     
+    public Type getType();
     
     
 }

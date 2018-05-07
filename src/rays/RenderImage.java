@@ -1,17 +1,33 @@
+
+
 package rays;
 
-import static java.lang.System.out;
-
-import org.joml.Matrix3d;
-import org.joml.Matrix4f;
-import org.joml.Vector3d;
-import org.joml.Vector3dc;
+import java.awt.Color;
 
 public class RenderImage {
+    
+    private Color rayTracer(Ray inRay, int objId) {
+        
+        return null;
+    }
 
-    public static void main(String[] args) {
+    public RenderImage(Scene aScene) {
+        
+        Camera theSceneCamera = aScene.sceneCam;
+        int sceneW = aScene.width;
+        int sceneH = aScene.height;
+        for (int i = 0; i<sceneW; i++) {
+            for (int j = 0; j<sceneH; j++) {
+                // generate camera ray
+                
+                // now rayTracer
+                
+                // set color at i,j index with java
+            }
+        }
         
         
+
         
         
     }

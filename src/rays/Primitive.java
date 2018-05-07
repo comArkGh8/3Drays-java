@@ -20,13 +20,15 @@ public abstract class Primitive {
         this.objectMatrix = matrixIn;
     }
     
-    protected Matrix4f getTransformMatrix(Matrix4f matrixIn) {
+    public Matrix4f getTransformMatrix() {
         return this.objectMatrix;
     }
     
-    //protected abstract FixedVector getNormalAt(FixedVector point);
+    public abstract Shape getShape();
+    
+    public abstract FixedVector getNormalAt(FixedVector point);
     
     // TO ADD
-    // public abstract boolean rayHits(Ray aRay);
+    public abstract boolean rayHits(Ray aRay);
 }
 

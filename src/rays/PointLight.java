@@ -2,6 +2,8 @@ package rays;
 
 import java.awt.Color;
 
+import rays.Light.Type;
+
 public class PointLight implements Light{
     public final Type lightSource;
     public final FixedVector lightPosition;
@@ -13,6 +15,10 @@ public class PointLight implements Light{
         this.lightPosition = position;
         this.lightColor = color;
         
+    }
+    
+    public final Type getType(){
+        return this.lightSource;
     }
 
 }

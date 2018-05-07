@@ -4,9 +4,9 @@ import org.joml.*;
 
 public class FixedVector {
     
-    final float x;
-    final float y;
-    final float z;
+    private final float x;
+    private final float y;
+    private final float z;
     
     // sets vector; note that the coordinates are set to final
     // creates an immutable vector
@@ -14,6 +14,19 @@ public class FixedVector {
         this.x = xIn;
         this.y = yIn;
         this.z = zIn;
+      }
+    
+    // gets the components of the vector
+    public float x() {
+        return this.x;
+      }
+    
+    public float y() {
+        return this.y;
+      }
+    
+    public float z() {
+        return this.z;
       }
     
     // creates fixedVector from a vector3f
