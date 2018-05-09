@@ -3,6 +3,10 @@
 
 package rays;
 
+import static java.lang.System.out;
+
+import java.awt.Color;
+
 import org.joml.*;
 
 public class Ray {
@@ -12,15 +16,19 @@ public class Ray {
     
     public Ray(Vector3f startVector, Vector3f directionVector) {
         
-        this.start = new FixedVector(startVector);     
-        this.direction = new FixedVector(directionVector);
+        this.start = new FixedVector(startVector);
+        // normalize direction vector!
+        Vector3fc normalDir = directionVector.normalize();
+        this.direction = new FixedVector(normalDir);
 
     }
     
     public Ray(FixedVector startVector, FixedVector directionVector) {
         
-        this.start = startVector;     
-        this.direction = directionVector;
+        this.start = startVector;          
+        // normalize direction vector!
+        FixedVector normalDir = directionVector.normalize();
+        this.direction = normalDir;
 
     }
     
@@ -38,36 +46,59 @@ public class Ray {
      * @param objMat - input the objects matrix
      * @return - the ray as if the object was not transformed to actual coordinates
      */
-    public static Ray transformRayToPrimitive(Ray ray, Matrix4f objMat) {
+    public static Ray transformRayToPrimitive(Ray ray, Matrix4fc objMat) {
         
         // first get inverse matrix
         Matrix4f objInv = new Matrix4f();
         objMat.invert(objInv);
         
         // transform start
-        Vector4f rayStartExtend = new Vector4f(ray.start.x(), ray.start.y(), ray.start.z(), 1.0f);
-        Vector4f primitiveRayStartExtended = new Vector4f();
-        rayStartExtend.mul(objInv,primitiveRayStartExtended);
-        // put into Vec3
-        Vector3f primitiveRayStarVec3 = new Vector3f(primitiveRayStartExtended.x/primitiveRayStartExtended.w,
-                primitiveRayStartExtended.y/primitiveRayStartExtended.w,
-                primitiveRayStartExtended.z/primitiveRayStartExtended.w);
-        
-        FixedVector primitiveFixedStart = new FixedVector(primitiveRayStarVec3.x,primitiveRayStarVec3.y,primitiveRayStarVec3.z);
-        
+        Vector3fc inputStartVector = new Vector3f(ray.start.x(), ray.start.y(), ray.start.z());
+        FixedVector primitiveFixedStart = Geometry.mat4MultPosVec3(inputStartVector, objInv); 
+          
         // transform direction
-        Vector4f rayDirExtend = new Vector4f(ray.direction.x(), ray.direction.y(), ray.direction.z(), 0);
-        Vector4f primitiveRayDirExtended = new Vector4f();
-        rayDirExtend.mul(objInv,primitiveRayDirExtended);
-        Vector3f primitveRaWRayVec3 = new Vector3f(primitiveRayDirExtended.x,primitiveRayDirExtended.y,primitiveRayDirExtended.z);
-        primitveRaWRayVec3.normalize();
-        
-        FixedVector primitiveFixedDir = new FixedVector(primitveRaWRayVec3.x,primitveRaWRayVec3.y,primitveRaWRayVec3.z);
+        Vector3fc inputDirectionVector = new Vector3f(ray.direction.x(), ray.direction.y(), ray.direction.z());
+        FixedVector primitiveFixedDir = Geometry.mat4MultDirVec3(inputDirectionVector, objInv); 
         
         // create Ray from start and direction
         Ray primitiveReturnRay = new Ray(primitiveFixedStart, primitiveFixedDir);
         
         return primitiveReturnRay;
     }
+   
+    /**
+    *  returns ray which is reflected at given point according to normal provided
+    *  
+    * @param normalVector - normal vector of surface across which reflection occurs
+    * @param reflectPt - pt at which reflection occurs
+    * @return - the ray with the reflected direction (use Geometry method, which returns normalized direction)
+    */  
+    public Ray getReflectionAcross(FixedVector reflectPt, FixedVector normalVector) {
+        // get direction for reflected 
+        FixedVector inRayDir = this.direction;
+        
+        FixedVector reflectRayDir = Geometry.reflectDirectionVector(inRayDir, normalVector);
+        
+        // make new Ray and return
+        Ray reflectRay = new Ray(reflectPt, reflectRayDir);
+
+        return reflectRay;
+    }
+    
+    
+    public Color getRayColorFrom(Primitive objHit, FixedVector hiPt) {
+        // IM HERE USE LIGHT.COMPUTELIGHT METHOD!!!!
+        
+        
+        return null;
+    }
+    
+    
+    
+    
+    
+    
+    
+    
 
 }

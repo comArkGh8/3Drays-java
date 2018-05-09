@@ -76,18 +76,36 @@ public class FixedVector {
         
         return fixedCross;
     }
+    
+    // takes dot product of fixed vector with fixed vector
+    public float dot(FixedVector fixedV) {
+        // first create Vector3f for dot product
+        Vector3fc givenVector = new Vector3f(this.x, this.y, this.z);
+        Vector3fc inputVector = new Vector3f(fixedV.x, fixedV.y, fixedV.z);
+               
+        // get dot product from joml
+        float dotResult = givenVector.dot(inputVector);
+        
+        return dotResult;
+    }
 
     // normalizes fixed vector
     public FixedVector normalize() {
         // first create Vector3f for normalization
         Vector3f givenVector = new Vector3f(this.x, this.y, this.z);
         
-        Vector3f normalizedIntermediate = givenVector.normalize();
+        Vector3f normalizedIntermediate = new Vector3f();
+        givenVector.normalize(normalizedIntermediate);
         
         // now create fixedVector from result     
         FixedVector normedRes = new FixedVector(normalizedIntermediate);
         
         return normedRes;
+    }
+
+    public FixedVector multConst(float dDotn) {
+        FixedVector mulConstVec = new FixedVector(dDotn * this.x, dDotn * this.y, dDotn * this.z);        
+        return mulConstVec;
     }
     
 

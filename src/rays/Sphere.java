@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
+import org.joml.Vector3fc;
 import org.joml.Vector4f;
 
 public class Sphere extends Primitive {
@@ -46,53 +47,129 @@ public class Sphere extends Primitive {
 
     @Override
     public FixedVector getNormalAt(FixedVector point) {
-        // extend input point
-        Vector4f actualPointVec4 = new Vector4f(point.x(),point.y(),point.z(),1.0f);
 
         // get matrix and inverse
         Matrix4f objMatrix = this.getTransformMatrix();
         Matrix4f objInv = new Matrix4f();
         objMatrix.invert(objInv);
         
-        Vector4f primitiveIntersectionPtExtended = new Vector4f();
-        actualPointVec4.mul(objInv,primitiveIntersectionPtExtended);
-        
-        Vector3f primitiveIntersectionPt = new Vector3f(primitiveIntersectionPtExtended.x/primitiveIntersectionPtExtended.w,
-                    primitiveIntersectionPtExtended.y/primitiveIntersectionPtExtended.w,
-                    primitiveIntersectionPtExtended.z/primitiveIntersectionPtExtended.w);
+        // transform intersection point
+        Vector3fc actualPointVec3 = new Vector3f(point.x(),point.y(),point.z());
+        FixedVector primitiveIntersectionPtFixed = Geometry.mat4MultPosVec3(actualPointVec3, objInv);
+        Vector3fc primitiveIntersectionPt = new Vector3f(primitiveIntersectionPtFixed.x(),
+                primitiveIntersectionPtFixed.y(),primitiveIntersectionPtFixed.z());       
         
         // get center as Vec3
-        Vector3f centerVec3 = new Vector3f(this.center.x(), this.center.y(), this.center.z());
-
-        Vector3f normalAtPrimitiveInterscnPt = primitiveIntersectionPt.sub(centerVec3);
-        Vector4f normalAtPrimitiveExtended = 
-                new Vector4f(normalAtPrimitiveInterscnPt.x, normalAtPrimitiveInterscnPt.y,
-                        normalAtPrimitiveInterscnPt.z, 0.0f);
-
-        // now transform with obj matrix to actual coordinates:
+        Vector3fc centerVec3 = new Vector3f(this.center.x(), this.center.y(), this.center.z());
+        Vector3f normalAtPrimitiveInterscnPt = new Vector3f();
+        primitiveIntersectionPt.sub(centerVec3, normalAtPrimitiveInterscnPt);
+        
+        // transform normal with transpose inverse
         Matrix4f transposeInv = objMatrix.normal();
+        FixedVector normalAtIntersectionRaw = Geometry.mat4MultDirVec3(normalAtPrimitiveInterscnPt, transposeInv);
+        FixedVector normalAtIntersection = normalAtIntersectionRaw.normalize();       
         
-        // now actual normal extended
-        Vector4f normalAtInterscnPtExtended = new Vector4f();
-        normalAtPrimitiveExtended.mul(transposeInv, normalAtInterscnPtExtended);
-        
-        // now write as 3Vec
-        Vector3f normalAtInterscnPt = 
-                new Vector3f(normalAtInterscnPtExtended.x,normalAtInterscnPtExtended.y,normalAtInterscnPtExtended.z);
-
-        // normalize the vector and return
-        normalAtInterscnPt.normalize();
-        FixedVector normalAtIntersection = new FixedVector(normalAtInterscnPt);
         return normalAtIntersection;
     }
     
+    // returns discriminant associated with primitve sphere
+    // if ray points in wrong direction return -1;
+    //CHANGE TO PRIVATE!!!
+    public float getDiscWith(Ray ray){
+        float discriminant;
+
+        // first transform ray to primitive
+        Matrix4f sphMatrix = this.getTransformMatrix();
+        Ray primitiveRay = Ray.transformRayToPrimitive(ray, sphMatrix);
+
+        FixedVector rayDirn = primitiveRay.direction;
+        FixedVector rayStart = primitiveRay.start;
+        FixedVector sphCenter = this.center;
+        
+        // check to see if in direction of rayDirection
+        FixedVector rayStartToCenter = sphCenter.subtractFixed(ray.start);
+        if (rayStartToCenter.dot(ray.direction)<GlobalConstants.acceptableError) {
+            return -1;
+        }
+        
+        float r = this.radius;
+        // quadratic eqn reads:
+        // a = rayDirn^2;  b = 2 rayDirn (rayStart - sphCenter); c = (rayStart - sphCenter)^2
+        float a = rayDirn.dot(rayDirn);
+        float b = 2*( rayDirn.dot( rayStart.subtractFixed( sphCenter) ) ) ;
+        // from center to ray start:
+        FixedVector centerToStart = rayStart.subtractFixed(sphCenter);
+        float c = centerToStart.dot(centerToStart) -r*r;
+
+        discriminant = b*b - 4*a*c;
+        return discriminant;
+
+    }
     
 
     @Override
     public boolean rayHits(Ray aRay) {
-        // TODO Auto-generated method stub
-        return false;
+        // get discriminant
+        float disc = this.getDiscWith(aRay);
+
+        // if disc < 0 does not
+        if (disc<GlobalConstants.acceptableError){
+            return false;
+        }
+        return true;
     }
+    
+     // given a ray and a sphere, returns the pt of intersection of ray and sphere
+     // assume intersection; disc >= 0
+     public FixedVector raySphereIntersection(Ray ray){
+         // get center vector
+         FixedVector sphCenter = this.center;
+    
+         // first transform ray to primitive
+         Matrix4f objMatrix = this.getTransformMatrix();
+         Ray primitiveRay = Ray.transformRayToPrimitive(ray, objMatrix);
+    
+         // get (primitve) ray start and direction
+         FixedVector rayStart = primitiveRay.start;
+         FixedVector rayDirn = primitiveRay.direction;
+         float r = this.radius;
+    
+         float a = rayDirn.dot(rayDirn);
+         float b = 2*( rayDirn.dot( rayStart.subtractFixed( sphCenter) ) ) ;
+    
+         float disc = this.getDiscWith(ray);
+    
+         // soln to quadratic
+         // a = rayDirn^2;  b = 2 rayDirn (rayStart - sphCenter); c = (rayStart - sphCenter)^2-r^2
+         double soln1 = (-b+Math.sqrt(disc))/(2*a);
+         double soln2 = (-b-Math.sqrt(disc))/(2*a);
+    
+         // soln gives time for ray
+         double t;
+    
+         // from assumption: if disc !=0 then must be pos
+         if (disc < GlobalConstants.acceptableError){
+             t = soln1;
+         }
+         else if (soln2<=0){
+             t = soln1;
+         }
+         else{
+             t = soln2;
+         }
+    
+         // now find pt by plugging in time into (primitive) ray eqn:
+    
+         float xIntersect = (float) (rayStart.x() + (rayDirn.x())*t);
+         float yIntersect = (float) (rayStart.y() + (rayDirn.y())*t);
+         float zIntersect = (float) (rayStart.z() + (rayDirn.z())*t);
+    
+         // now transform this point to actual coordinates
+         FixedVector primitiveVec = new FixedVector(xIntersect,yIntersect,zIntersect);
+         FixedVector actualPt = Geometry.mat4MultPosVec3(primitiveVec, objMatrix);
+    
+         return actualPt;
+     }
     
     
     // for unit tests;

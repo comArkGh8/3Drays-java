@@ -4,6 +4,8 @@ import java.util.Collections;
 import java.util.List;
 
 import org.joml.*;
+import java.lang.*;
+import java.lang.Math;
 
 import rays.Primitive.Shape;
 
@@ -54,39 +56,42 @@ public class Triangle extends Primitive {
         // set the matrix
         this.setTransformMatrix(matrixIn);
 
-
     }
+    
 
     @Override
     public Shape getShape() {
         return this.type;
     }
+    
+    
+    private Vector4fc getPlaneEqnVector() {
+        FixedVector normalVec = this.getNormalAt(null);
+        float RHS = normalVec.dot(this.v1);
+        
+        Vector4fc planeEqnRep = new Vector4f(normalVec.x(),normalVec.y(),normalVec.z(),RHS);
+        
+        return planeEqnRep;
+    }
+    
 
     @Override
     public FixedVector getNormalAt(FixedVector point) {
         // normal primitive is already normalized
         FixedVector normalPrimitive = this.primitiveNormal;
-        // write normal as 4Vec
-        Vector4f normalPrimitiveExtended = 
-                new Vector4f(normalPrimitive.x(), normalPrimitive.y(), normalPrimitive.z(), 0.0f);
+        // make into Vector3fc
+        Vector3fc inputVector = new Vector3f(normalPrimitive.x(),normalPrimitive.y(),normalPrimitive.z());
         
         // get objMatrix
         Matrix4f objMatrix = this.getTransformMatrix();
-
         // now transform with obj matrix, transpose of inverse...
         Matrix4f transposeInv = objMatrix.normal();
         
-        // now actual normal
-        Vector4f normalAtInterscnPtExtended = new Vector4f();
-        normalPrimitiveExtended.mul(transposeInv, normalAtInterscnPtExtended);
-        
-        // now write as 3Vec
-        Vector3f normalAtInterscnPt = 
-                new Vector3f(normalAtInterscnPtExtended.x,normalAtInterscnPtExtended.y,normalAtInterscnPtExtended.z);
+        // now actual normal: multiply with transpose inverse
+        FixedVector normalAtInterscnPt = Geometry.mat4MultDirVec3(inputVector, transposeInv);              
 
         // normalize the vector and return
-        normalAtInterscnPt.normalize();
-        FixedVector normalAtIntersection = new FixedVector(normalAtInterscnPt);
+        FixedVector normalAtIntersection = normalAtInterscnPt.normalize();
         return normalAtIntersection;
     }
     
@@ -98,20 +103,91 @@ public class Triangle extends Primitive {
     public FixedVector rayPlaneIntersection(Ray ray){
 
         // first transform ray to primitive
-        // get matrix and inverse
         Matrix4f objMatrix = this.getTransformMatrix();
-
         Ray primitiveRay = Ray.transformRayToPrimitive(ray, objMatrix);
 
-
-        return null;
+        // get planeEqnRep
+        Vector4fc planeEqnRep = this.getPlaneEqnVector();
+        float d = planeEqnRep.w();
+        
+        FixedVector nVec = new FixedVector(planeEqnRep.x(), planeEqnRep.y(), planeEqnRep.z());
+        FixedVector startRay = primitiveRay.start;
+        FixedVector dirRay = primitiveRay.direction;
+        
+        
+        // intersection time:
+        float t = (d - nVec.dot(startRay))/(nVec.dot(dirRay));
+        
+        float xIntersect = startRay.x() + (dirRay.x())*t;
+        float yIntersect = startRay.y() + (dirRay.y())*t;
+        float zIntersect = startRay.z() + (dirRay.z())*t;
+        
+        // make FixedVec and transform
+        Vector3fc primitiveIntersect = new Vector3f(xIntersect, yIntersect, zIntersect);
+        FixedVector actualIntersect = Geometry.mat4MultPosVec3(primitiveIntersect, objMatrix);
+        
+        return actualIntersect;
 
     }
 
+    
+    // given a ray and a triangle, returns true if intersection is in triangle, else false
     @Override
     public boolean rayHits(Ray aRay) {
-        // TODO Auto-generated method stub
-        return false;
+        
+        FixedVector side1Tri = this.v2.subtractFixed(v1);
+        FixedVector side2Tri = this.v3.subtractFixed(v1);
+        // first get intersection with plane
+        // then find soln to point with side vectors
+
+        // this is in actual space!
+        FixedVector pointOnPlane = this.rayPlaneIntersection(aRay);
+        // check to see if in direction of rayDirection
+        FixedVector rayStartToPt = pointOnPlane.subtractFixed(aRay.start);
+        if (rayStartToPt.dot(aRay.direction)<GlobalConstants.acceptableError) {
+            return false;
+        }
+
+        // now go back to primitive space
+        Matrix4f objMatrix = this.getTransformMatrix();
+        Matrix4f invMatrix = new Matrix4f();
+        objMatrix.invert(invMatrix);        
+        FixedVector primitiveInterPt = Geometry.mat4MultPosVec3(pointOnPlane, invMatrix);
+
+        FixedVector ptToPrimTri = primitiveInterPt.subtractFixed(this.v1);
+
+        // check cross prod for non-zero determinant
+        FixedVector sidesCrossProd = side1Tri.cross(side2Tri);
+        
+        float alpha=0;
+        float beta=0;
+
+        if (Math.abs(sidesCrossProd.x()) > GlobalConstants.acceptableError){
+            alpha = (side2Tri.z() * ptToPrimTri.y() - side2Tri.y() * ptToPrimTri.z())/
+                            (sidesCrossProd.x());
+            beta = (-side1Tri.z() * ptToPrimTri.y() + side1Tri.y() * ptToPrimTri.z())/
+                            (sidesCrossProd.x());
+        }
+        else if (sidesCrossProd.y()  > GlobalConstants.acceptableError){
+            alpha = (side2Tri.x() * ptToPrimTri.z() - side2Tri.z() * ptToPrimTri.x())/
+                            (sidesCrossProd.y());
+            beta = (-side1Tri.x() * ptToPrimTri.z() + side1Tri.z() * ptToPrimTri.x())/
+                            (sidesCrossProd.y());
+        }
+        else if (sidesCrossProd.z()  > GlobalConstants.acceptableError){
+            alpha = (side2Tri.y() * ptToPrimTri.x() - side2Tri.x() * ptToPrimTri.y())/
+                            (sidesCrossProd.z());
+            beta = (-side1Tri.y() * ptToPrimTri.x() + side1Tri.x() * ptToPrimTri.y())/
+                            (sidesCrossProd.z());
+        }
+
+        if ( (alpha >= 0 & beta >= 0) & (alpha+beta<=1 ) ) {
+            return true;
+        }
+        else{
+            return false;
+        }
+        
     }
     
     
