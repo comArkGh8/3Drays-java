@@ -21,10 +21,13 @@ public class Sphere extends Primitive {
     public final List<Float> emission;
     public final float shininess;
     
+    private final int id;
+    
     // creates a sphere
-    public Sphere(FixedVector centerIn, float radiusIn, List<Float> ambientList, List<Float> diffuseList, List<Float> specularList,
+    public Sphere(int id, FixedVector centerIn, float radiusIn, List<Float> ambientList, List<Float> diffuseList, List<Float> specularList,
             List<Float> emissionList, float shininess, Matrix4f matrixIn) {
         
+        this.id = id;
         this.type = Shape.SPHERE;
         
         this.center = centerIn;
@@ -75,20 +78,20 @@ public class Sphere extends Primitive {
     // returns discriminant associated with primitve sphere
     // if ray points in wrong direction return -1;
     //CHANGE TO PRIVATE!!!
-    public float getDiscWith(Ray ray){
+    private float getDiscWith(Ray ray){
         float discriminant;
 
         // first transform ray to primitive
         Matrix4f sphMatrix = this.getTransformMatrix();
         Ray primitiveRay = Ray.transformRayToPrimitive(ray, sphMatrix);
 
-        FixedVector rayDirn = primitiveRay.direction;
-        FixedVector rayStart = primitiveRay.start;
+        FixedVector rayDirn = primitiveRay.getDirectionVector();
+        FixedVector rayStart = primitiveRay.getStartVector();
         FixedVector sphCenter = this.center;
         
         // check to see if in direction of rayDirection
-        FixedVector rayStartToCenter = sphCenter.subtractFixed(ray.start);
-        if (rayStartToCenter.dot(ray.direction)<GlobalConstants.acceptableError) {
+        FixedVector rayStartToCenter = sphCenter.subtractFixed(ray.getStartVector());
+        if (rayStartToCenter.dot(ray.getDirectionVector())<GlobalConstants.acceptableError) {
             return -1;
         }
         
@@ -121,7 +124,8 @@ public class Sphere extends Primitive {
     
      // given a ray and a sphere, returns the pt of intersection of ray and sphere
      // assume intersection; disc >= 0
-     public FixedVector raySphereIntersection(Ray ray){
+     @Override
+     public FixedVector getHitPoint(Ray ray){
          // get center vector
          FixedVector sphCenter = this.center;
     
@@ -130,9 +134,8 @@ public class Sphere extends Primitive {
          Ray primitiveRay = Ray.transformRayToPrimitive(ray, objMatrix);
     
          // get (primitve) ray start and direction
-         FixedVector rayStart = primitiveRay.start;
-         FixedVector rayDirn = primitiveRay.direction;
-         float r = this.radius;
+         FixedVector rayStart = primitiveRay.getStartVector();
+         FixedVector rayDirn = primitiveRay.getDirectionVector();
     
          float a = rayDirn.dot(rayDirn);
          float b = 2*( rayDirn.dot( rayStart.subtractFixed( sphCenter) ) ) ;
@@ -170,6 +173,12 @@ public class Sphere extends Primitive {
     
          return actualPt;
      }
+     
+     
+     @Override
+     public int getId() {
+         return this.id;
+     }
     
     
     // for unit tests;
@@ -186,10 +195,13 @@ public class Sphere extends Primitive {
         this.specular = null;
         this.emission = null;
         this.shininess = 0;
+        this.id = 0;
         
         // set the matrix
         this.setTransformMatrix(matrixIn);
     }
+
+
 
     
     

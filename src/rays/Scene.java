@@ -252,7 +252,7 @@ public class Scene {
   
                             // now create triangle and enter into objectMap
                             numObjects++;
-                            Triangle triToAdd = new Triangle(v1, v2, v3, 
+                            Triangle triToAdd = new Triangle(numObjects, v1, v2, v3, 
                                     ambient, diffuse, specular, emission, shininess, triMatrix);
                                     
                             objectIdMap.put(numObjects, triToAdd);
@@ -278,7 +278,7 @@ public class Scene {
   
                             // now create sph and enter into objectMap
                             numObjects++;
-                            Sphere sphToAdd = new Sphere(center, radius, 
+                            Sphere sphToAdd = new Sphere(numObjects, center, radius, 
                                     ambient, diffuse, specular, emission, shininess, sphMatrix);
                                     
                             objectIdMap.put(numObjects, sphToAdd);
@@ -331,7 +331,7 @@ public class Scene {
                         
                     case "directional":
                         validinput = readvals(cmdVals, 7);
-                        if (validinput) {
+                        if (validinput) {                            
                             // values[1..3] are the (into)direction, others are color.
                             float dirX = Float.parseFloat(cmdVals[1]);
                             float dirY = Float.parseFloat(cmdVals[2]);
@@ -341,10 +341,9 @@ public class Scene {
                             float colorR = Float.parseFloat(cmdVals[4]);
                             float colorG = Float.parseFloat(cmdVals[5]);
                             float colorB = Float.parseFloat(cmdVals[6]);
-                            Color dirColor = new Color(colorR, colorG, colorB);
                             
                             // create light and add to list
-                            Light readDirLight = new DirectionalLight(directionVec, dirColor);
+                            Light readDirLight = new DirectionalLight(directionVec, colorR, colorG, colorB);
                             numLights++;
                             lightIdMap.put(numLights, readDirLight);
                         } 
@@ -353,7 +352,7 @@ public class Scene {
                     case "point":
                         validinput = readvals(cmdVals, 7);
                         if (validinput) {
-                            // values[1..3] are the poition of the source, others are color.
+                            // values[1..3] are the position of the source, others are color.
                             float posX = Float.parseFloat(cmdVals[1]);
                             float posY = Float.parseFloat(cmdVals[2]);
                             float posZ = Float.parseFloat(cmdVals[3]);
@@ -362,10 +361,9 @@ public class Scene {
                             float colorR = Float.parseFloat(cmdVals[4]);
                             float colorG = Float.parseFloat(cmdVals[5]);
                             float colorB = Float.parseFloat(cmdVals[6]);
-                            Color dirColor = new Color(colorR, colorG, colorB);
                             
                             // create light and add to list
-                            Light readPtLight = new PointLight(positionVec, dirColor);
+                            Light readPtLight = new PointLight(positionVec, colorR, colorG, colorB);
                             numLights++;
                             lightIdMap.put(numLights, readPtLight);
                         } 

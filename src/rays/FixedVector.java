@@ -1,6 +1,7 @@
 package rays;
 
 import org.joml.*;
+import java.lang.Math;
 
 public class FixedVector {
     
@@ -106,6 +107,27 @@ public class FixedVector {
     public FixedVector multConst(float dDotn) {
         FixedVector mulConstVec = new FixedVector(dDotn * this.x, dDotn * this.y, dDotn * this.z);        
         return mulConstVec;
+    }
+
+    public Float get(int l) {
+        switch (l) {
+        case 0:
+            return this.x;
+            
+        case 1:
+            return this.y;
+            
+        case 2:
+            return this.z;
+        }
+               
+        return null;
+    }
+
+    public float length() {
+        float h2 = this.x * this.x + this.y * this.y + this.z * this.z;
+        float l = (float) Math.sqrt(h2);
+        return l;
     }
     
 

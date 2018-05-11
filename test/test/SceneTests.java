@@ -180,7 +180,7 @@ public class SceneTests {
             Primitive fifthTri = testScene.objectIdMapFinal.get(5);
             Matrix4f fifthMat = fifthTri.getTransformMatrix();
             assertEquals("3,4 entry is -2", -2, (int) fifthMat.m32());
-            out.println(fifthMat);
+            //out.println(fifthMat);
 
         } catch (IOException e) {
             // TODO Auto-generated catch block

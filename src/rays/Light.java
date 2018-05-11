@@ -1,6 +1,8 @@
 package rays;
 
 import java.awt.Color;
+import java.util.List;
+import java.util.Map;
 
 public interface Light {
     
@@ -10,25 +12,39 @@ public interface Light {
     
     public Type getType();
     
+    public FixedVector getColor();
+    
+    public FixedVector getPosition ();
+
+    
     // ComputeLight Fcn:
-    public Color computeLight (const vec3 direction, const vec3 lightcolor,
-        const vec3 normal, const vec3 halfvec, const vec3 mydiffuse, const vec3 myspecular,
-        const float myshininess) {
+    public static Color computeLight (FixedVector direction, FixedVector lightcolor,
+            FixedVector normal, FixedVector halfvec, List<Float> mydiffuse, List<Float> myspecular,
+            float myshininess) {
+        
+        float nDotL =  normal.dot(direction);
+        
+        // get entries for lambert
+        float[] lambertArray;
+        lambertArray = new float[3];
+        for (int l=0; l<3; l++) {
+            lambertArray[l] = mydiffuse.get(l) * lightcolor.get(l) * Math.max (nDotL, 0);
+        }
+ 
+        float nDotH =  normal.dot(halfvec);
 
-
-
-            float nDotL = glm::dot(normal, direction)  ;
-
-            vec3 lambert = mydiffuse * lightcolor * max (nDotL, (float) 0.0) ;
-
-
-            float nDotH = glm::dot(normal, halfvec) ;
-            vec3 phong = myspecular * lightcolor * pow (max(nDotH, (float) 0.0), myshininess) ;
-
-
-            vec3 retval = lambert + phong ;
-            return retval ;
+        float[] phongArray;
+        phongArray = new float[3];
+        for (int l=0; l<3; l++) {
+            phongArray[l] = (float) (myspecular.get(l) * lightcolor.get(l) * 
+                    Math.pow (Math.max(nDotH, 0), myshininess));
+        }
+        // now create color with two arrays
+        Color diffuseSpecularLight = Colors.getColor(lambertArray, phongArray);        
+        return diffuseSpecularLight ;
     }
+    
+    public abstract boolean reaches(FixedVector hitPt, Map<Integer, Primitive> objects);
     
     
 }

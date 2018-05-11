@@ -25,11 +25,14 @@ public class Triangle extends Primitive {
     public final List<Float> emission;
     public final float shininess;
     
+    private final int id;
+    
             
     // creates a triangle
-    public Triangle(FixedVector vert1, FixedVector vert2, FixedVector vert3, List<Float> ambientList, List<Float> diffuseList, List<Float> specularList,
+    public Triangle(int id, FixedVector vert1, FixedVector vert2, FixedVector vert3, List<Float> ambientList, List<Float> diffuseList, List<Float> specularList,
             List<Float> emissionList, float shininess, Matrix4f matrixIn) {
         
+        this.id = id;
         this.type = Shape.TRIANGLE;
         
         this.v1 = vert1;
@@ -111,8 +114,8 @@ public class Triangle extends Primitive {
         float d = planeEqnRep.w();
         
         FixedVector nVec = new FixedVector(planeEqnRep.x(), planeEqnRep.y(), planeEqnRep.z());
-        FixedVector startRay = primitiveRay.start;
-        FixedVector dirRay = primitiveRay.direction;
+        FixedVector startRay = primitiveRay.getStartVector();
+        FixedVector dirRay = primitiveRay.getDirectionVector();
         
         
         // intersection time:
@@ -143,8 +146,8 @@ public class Triangle extends Primitive {
         // this is in actual space!
         FixedVector pointOnPlane = this.rayPlaneIntersection(aRay);
         // check to see if in direction of rayDirection
-        FixedVector rayStartToPt = pointOnPlane.subtractFixed(aRay.start);
-        if (rayStartToPt.dot(aRay.direction)<GlobalConstants.acceptableError) {
+        FixedVector rayStartToPt = pointOnPlane.subtractFixed(aRay.getStartVector());
+        if (rayStartToPt.dot(aRay.getDirectionVector())<GlobalConstants.acceptableError) {
             return false;
         }
 
@@ -191,6 +194,17 @@ public class Triangle extends Primitive {
     }
     
     
+    // assumes a hit!
+    @Override
+    public FixedVector getHitPoint(Ray aRay) {
+        FixedVector hitPt = this.rayPlaneIntersection(aRay);
+        return hitPt;
+    }
+    
+    @Override
+    public int getId() {
+        return this.id;
+    }
     
     
     
@@ -210,6 +224,8 @@ public class Triangle extends Primitive {
         this.emission = null;
         this.shininess = 0.0f;
         
+        this.id = 0;
+        
         FixedVector side1 = this.v2.subtractFixed(this.v1);
         FixedVector side2 = this.v3.subtractFixed(this.v1);
 
@@ -221,6 +237,11 @@ public class Triangle extends Primitive {
         // set the matrix as identity
         this.setTransformMatrix(triMatrix);
     }
+
+
+
+
+
     
 }
 

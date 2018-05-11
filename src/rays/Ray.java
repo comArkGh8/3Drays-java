@@ -6,13 +6,21 @@ package rays;
 import static java.lang.System.out;
 
 import java.awt.Color;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
+import java.lang.Math;
 import org.joml.*;
+
+import rays.Light.Type;
 
 public class Ray {
     
-    FixedVector start;
-    FixedVector direction;
+    private FixedVector start;
+    private FixedVector direction;
     
     public Ray(Vector3f startVector, Vector3f directionVector) {
         
@@ -86,15 +94,167 @@ public class Ray {
     }
     
     
-    public Color getRayColorFrom(Primitive objHit, FixedVector hiPt) {
-        // IM HERE USE LIGHT.COMPUTELIGHT METHOD!!!!
+    public Color getRayColorFrom(Primitive objHit, FixedVector hitPt, Scene theScene) {
+        // first color from object itself
+        // get ambient and emission lists 
+        List<Float> ambientInput = objHit.ambient;
+        List<Float> emissionInput = objHit.emission;
+        Color colorFromObj = Colors.produceColor(ambientInput, emissionInput);
+                
+        // make new list minus objHit
+        Map<Integer, Primitive> allObjects = theScene.objectIdMapFinal;
+        int idExclude = objHit.getId();
+        Map<Integer, Primitive> validObjects = new HashMap();
+        for (int aKey: allObjects.keySet()) {
+            if (aKey != idExclude) {
+                validObjects.put(aKey, allObjects.get(aKey));
+            }
+        }
+        Map<Integer, Primitive> validObjectsFinal = Collections.unmodifiableMap(validObjects);
+        
+        // get normal of object at hit point, and its properties
+        FixedVector normal = objHit.getNormalAt(hitPt);
+        List<Float> mydiffuse = objHit.diffuse;
+        List<Float> myspecular = objHit.specular;
+        float myshininess = objHit.shininess;
+        
+        // for each light....if it reaches object
+        Map<Integer, Light> allLights = theScene.lightIdMapFinal;
+        for (Light aLight : allLights.values()) {            
+            if (aLight.reaches(hitPt, validObjectsFinal) ){
+                // compute light color
+                FixedVector direction;
+                FixedVector lightcolor = aLight.getColor(); 
+                FixedVector halfDirectn;
+                if (aLight.getType()==Type.POINT) {
+                    FixedVector ptPosn = aLight.getPosition();
+                    FixedVector lightDirectionTo = hitPt.subtractFixed(ptPosn);
+
+                    FixedVector reflectDirection = 
+                            Geometry.reflectDirectionVector(lightDirectionTo, normal);
+
+                    FixedVector halfDirectnRaw = reflectDirection.subtractFixed(this.direction);
+                    halfDirectn = halfDirectnRaw.normalize();
+                    
+                }
+                else if (aLight.getType()==Type.DIRECTIONAL) {
+                    // vectors from directional... IM HERE!!!!!
+                }
+                
+                // WANT TO ADD THIS TO COLOR!!!!
+                Light.computeLight(hitPt, lightcolor, normal, halfDirectn, mydiffuse, myspecular, myshininess);
+            }
+        }
+        // for each type of light...two cases, pt source or directnl
+        for (int i = 0 ; i < numPtLights ; i++) {
+            vec3 colorVectorFromLight;
+            // get point light position
+            vec3 ptLightPosVec = vec3(pointPosn[3*i], pointPosn[3*i+1], pointPosn[3*i+2]);
+
+            if (lightReaches(ptLightPosVec,rayObjectIntersectPt)){
+                // then add color from light
+                colorVectorFromLight = computeTriColorFromPtLight(triangleReached, rayObjectIntersectPt, aRay, i);
+                colorVector = colorVector + colorVectorFromLight;
+            }
+        }
+        
+        // then color from light calcs
+        // go through all lights
+        // get direction vector, halfvec, normal, etc
         
         
         return null;
     }
     
+    /**
+     * 
+     * @param objectIdMap - enters in the map of objects id->Object
+     *      the map doesnt necessarily contain all objects, just those under
+     *      consideration
+     * @return - the id, hitPoint
+     */
+    public Map<Integer,FixedVector> getClosestObject (Map<Integer,Primitive> objectIdMap){
+
+        float smallDist = 0; // init smallest distance measure
+        int currentId = 0;
+        FixedVector hitPtVec = null;
+        
+        // go through all objects
+        // use for each KEY!!! as some (one) objects may be missing from list!
+        Set<Integer> idSet= objectIdMap.keySet();
+        for (int objCount : idSet){
+            
+            Primitive currentObj = objectIdMap.get(objCount); 
+
+
+            if (currentObj.rayHits(this) ){
+                // get distance of start of ray to hit point
+                FixedVector intersectionPt = currentObj.getHitPoint(this);
+                FixedVector distSegment = intersectionPt.subtractFixed(this.start);            
+                float currentDist = distSegment.length();
+
+                if (smallDist == 0){
+                    smallDist = currentDist;
+                    // record id
+                    currentId = objCount;
+                    // record pt
+                    hitPtVec = currentObj.getHitPoint(this);
+                }
+                else if (smallDist < currentDist){
+                    // do nothing; already have first hit
+                }
+                else{
+                    smallDist = currentDist;
+                    currentId = objCount;
+                    hitPtVec = currentObj.getHitPoint(this);
+                }
+            }
+        }
+        
+        Map<Integer,FixedVector> idHitPtMapFinal;
+        Map<Integer,FixedVector> idHitMap = new HashMap();
+        
+        idHitMap.put(currentId, hitPtVec);
+        idHitPtMapFinal = Collections.unmodifiableMap(idHitMap);
+        
+        return idHitPtMapFinal;
+    }
     
-    
+    /**
+     * assumes object input is hit by ray
+     * @param objectHit - the object intersected by ray
+     * @return - the distance between ray start and hit point
+     */
+    public float getDistanceTo(Primitive objectHit){
+
+        FixedVector hitPt = objectHit.getHitPoint(this);
+        FixedVector startPt = this.getStartVector();
+        FixedVector segmentVec = hitPt.subtractFixed(startPt);
+        
+        float dist = segmentVec.length();
+        
+        return dist;
+    }
+
+    // returns the smallest distance to object (among all objects in scene)
+    // returns -1 if no hit
+    public float getClosestDistanceToAnyObjectAmong(Map<Integer,Primitive> objectList) {
+        float dist=-1;
+        
+        for (Primitive anObject: objectList.values()) {
+            if (anObject.rayHits(this) ){
+                float currentDist = this.getDistanceTo(anObject);
+                if (dist == -1) {
+                    dist = currentDist;
+                }
+                else if (  (currentDist <= dist) && (currentDist > GlobalConstants.acceptableError) ) {
+                    dist = currentDist;
+                }
+            }
+        }
+        
+        return dist;
+    }
     
     
     
