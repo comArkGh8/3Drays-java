@@ -67,6 +67,10 @@ public class PointLight implements Light{
         return this.lightPosition;
     }
 
+    @Override
+    public FixedVector getDirectionTo() {
+        throw new IllegalArgumentException();
+    }
 
 
 

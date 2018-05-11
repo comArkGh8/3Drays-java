@@ -95,6 +95,8 @@ public class Ray {
     
     
     public Color getRayColorFrom(Primitive objHit, FixedVector hitPt, Scene theScene) {
+        
+        Color colorSum = new Color(0);
         // first color from object itself
         // get ambient and emission lists 
         List<Float> ambientInput = objHit.ambient;
@@ -110,6 +112,7 @@ public class Ray {
                 validObjects.put(aKey, allObjects.get(aKey));
             }
         }
+        
         Map<Integer, Primitive> validObjectsFinal = Collections.unmodifiableMap(validObjects);
         
         // get normal of object at hit point, and its properties
@@ -126,44 +129,31 @@ public class Ray {
                 FixedVector direction;
                 FixedVector lightcolor = aLight.getColor(); 
                 FixedVector halfDirectn;
+                FixedVector lightDirectionTo = null;
+                
                 if (aLight.getType()==Type.POINT) {
                     FixedVector ptPosn = aLight.getPosition();
-                    FixedVector lightDirectionTo = hitPt.subtractFixed(ptPosn);
-
-                    FixedVector reflectDirection = 
-                            Geometry.reflectDirectionVector(lightDirectionTo, normal);
-
-                    FixedVector halfDirectnRaw = reflectDirection.subtractFixed(this.direction);
-                    halfDirectn = halfDirectnRaw.normalize();
-                    
+                    lightDirectionTo = hitPt.subtractFixed(ptPosn);        
                 }
                 else if (aLight.getType()==Type.DIRECTIONAL) {
-                    // vectors from directional... IM HERE!!!!!
+                    lightDirectionTo  = aLight.getDirectionTo();
                 }
                 
-                // WANT TO ADD THIS TO COLOR!!!!
-                Light.computeLight(hitPt, lightcolor, normal, halfDirectn, mydiffuse, myspecular, myshininess);
-            }
-        }
-        // for each type of light...two cases, pt source or directnl
-        for (int i = 0 ; i < numPtLights ; i++) {
-            vec3 colorVectorFromLight;
-            // get point light position
-            vec3 ptLightPosVec = vec3(pointPosn[3*i], pointPosn[3*i+1], pointPosn[3*i+2]);
+                FixedVector reflectDirection = 
+                        Geometry.reflectDirectionVector(lightDirectionTo, normal);
 
-            if (lightReaches(ptLightPosVec,rayObjectIntersectPt)){
-                // then add color from light
-                colorVectorFromLight = computeTriColorFromPtLight(triangleReached, rayObjectIntersectPt, aRay, i);
-                colorVector = colorVector + colorVectorFromLight;
+                FixedVector halfDirectnRaw = reflectDirection.subtractFixed(this.direction);
+                halfDirectn = halfDirectnRaw.normalize();
+                
+                // add this to color
+                Color colorCurrentLight = Light.computeLight(hitPt, lightcolor, normal, halfDirectn, mydiffuse, myspecular, myshininess);
+                colorSum = Colors.add(colorSum, colorCurrentLight);
             }
         }
         
-        // then color from light calcs
-        // go through all lights
-        // get direction vector, halfvec, normal, etc
-        
-        
-        return null;
+        Color totalColor = Colors.add(colorSum,colorFromObj);
+
+        return totalColor;
     }
     
     /**

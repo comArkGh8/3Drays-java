@@ -15,6 +15,13 @@ public interface Light {
     public FixedVector getColor();
     
     public FixedVector getPosition ();
+    
+    /**
+     * 
+     * @return the direction in which the light shines (if Directional!)
+     * result is automatically normalized
+     */
+    public FixedVector getDirectionTo ();
 
     
     // ComputeLight Fcn:

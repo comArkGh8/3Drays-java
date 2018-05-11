@@ -28,4 +28,15 @@ public class Colors {
         return totalCol;
     }
 
+    public static Color add(Color colorOne, Color colorTwo) {
+        // get Vectors representing Colors
+        FixedVector colorOneVec = new FixedVector(colorOne.getRed(), colorOne.getGreen(),
+                colorOne.getBlue());
+        FixedVector colorTwoVec = new FixedVector(colorTwo.getRed(), colorTwo.getGreen(),
+                colorTwo.getBlue());
+        FixedVector colorSumVec = colorOneVec.addFixed(colorTwoVec);
+        Color colorSum = new Color(colorSumVec.x(), colorSumVec.y(), colorSumVec.z());
+        return colorSum;
+    }
+
 }

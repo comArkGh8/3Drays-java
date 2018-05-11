@@ -55,6 +55,13 @@ public class DirectionalLight implements Light{
             throw new IllegalArgumentException();
         }
 
+        @Override
+        public FixedVector getDirectionTo() {
+            FixedVector directionIn = this.lightDirection;
+            FixedVector lightTo = directionIn.multConst(-1);
+            return lightTo.normalize();
+        }
+
 
     }
 
