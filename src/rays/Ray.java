@@ -48,6 +48,7 @@ public class Ray {
         return this.direction;
     }
     
+    
     /**
      * object is represented as primitive 
      * @param ray - ray in world (actual) coordinates

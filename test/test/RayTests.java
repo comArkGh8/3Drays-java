@@ -230,12 +230,6 @@ public class RayTests {
         float radius = 1.0f;       
         Sphere testSph = new Sphere(center, radius, posMatrix);
         
-        // make the list of objects
-        Map<Integer,Primitive> justTri= new HashMap();
-        justTri.put(1, testTri);
-        // make the list of objects
-        Map<Integer,Primitive> justSph= new HashMap();
-        justSph.put(2, testSph);
         
         // make pt Light at (1,1,1) with red color
         FixedVector pointPos = new FixedVector(1.0f,1.0f,1.0f);
@@ -245,18 +239,6 @@ public class RayTests {
         FixedVector directionIntoLight = new FixedVector(1.0f,0,0);
         Light dirLight = new DirectionalLight(directionIntoLight, 0, 0, 1.0f);
         
-        float oneThird = 1.0f/3.0f;
-        // some hit points
-        FixedVector hitPtVertTri = new FixedVector(1,0,0);
-        FixedVector hitPtCenterTri = new FixedVector(oneThird,oneThird,oneThird);
-        
-        
-        // get hit point of point light to sphere with a ray
-        FixedVector centerFixed = new FixedVector(-2.0f,0,0);
-        FixedVector directionToSphere = centerFixed.subtractFixed(pointPos);
-        Ray pointLightSphereRay = new Ray(pointPos, directionToSphere);
-        FixedVector hitPtSphere = pointLightSphereRay.getClosestObject(justSph).get(2);
-        FixedVector testHitSphereBehindTri = new FixedVector(-1.0f,0.1f,0);
         
         // make ray at (2,2,2) should hit point lighted side of tri
         FixedVector startRayFaceTri = new FixedVector(2,2,2);
@@ -282,10 +264,36 @@ public class RayTests {
         FixedVector triNormalBack = testTri.getNormalAt(triInterBack);
         
         assertFalse("pt light hits face of tri, ray hits back", rayToBackTri.rayCheckSide(triInter, triNormalBack, ptLight));
+        assertFalse("direct light hits face of tri, ray hits back", rayToBackTri.rayCheckSide(triInter, triNormalBack, dirLight));
         
+        // create ray from back of sphere
+        FixedVector startRayBackSph = new FixedVector(-6,-0.5f,0);
+        FixedVector directRayBackSph = new FixedVector(1,0,0);
+        Ray rayToBackSph = new Ray(startRayBackSph, directRayBackSph);
+        FixedVector rayBackInterSph = testSph.getHitPoint(rayToBackSph);
+        FixedVector normAtBackSph = testSph.getNormalAt(rayBackInterSph);
+
+        assertTrue("ray from behind hits sphere", testSph.rayHits(rayToBackSph));
+        assertFalse("pt light hits side of sphere, ray hits back", rayToBackSph.rayCheckSide(rayBackInterSph, normAtBackSph, ptLight));
+        assertFalse("dir light also hits side of sphere, ray hits back", rayToBackSph.rayCheckSide(rayBackInterSph, normAtBackSph, dirLight));
         
-        // MORE TESTS HERE WITH DIRECTIONAL/Sphere....
+        // now try same with ray from back of sphere shifted to be hit by lights
+        FixedVector startRayBackSph2 = new FixedVector(-6,0.5f,0);
+        FixedVector directRayBackSph2 = new FixedVector(1,0,0);
+        Ray rayToBackSph2 = new Ray(startRayBackSph2, directRayBackSph2);
+        FixedVector rayBackInterSph2 = testSph.getHitPoint(rayToBackSph2);
+        FixedVector normAtBackSph2 = testSph.getNormalAt(rayBackInterSph2);
         
+        assertTrue("ray from behind hits sphere", testSph.rayHits(rayToBackSph2));
+        assertFalse("pt light hits side of sphere, ray hits back", rayToBackSph2.rayCheckSide(rayBackInterSph2, normAtBackSph2, ptLight));
+        assertFalse("dir light also hits side of sphere, ray hits back", rayToBackSph2.rayCheckSide(rayBackInterSph2, normAtBackSph2, dirLight));
+
+        // now directional light but from y axis
+        // make directional Light at (infty,0,0) with blue color
+        FixedVector directionIntoLightY = new FixedVector(0,1.0f,0);
+        Light dirLightY = new DirectionalLight(directionIntoLightY, 0, 0, 1.0f);
+        assertTrue("dirY light also hits side of sphere, ray hits back/side", rayToBackSph2.rayCheckSide(rayBackInterSph2, normAtBackSph2, dirLightY));
+
     }
     
     
