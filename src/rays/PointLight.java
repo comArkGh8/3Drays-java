@@ -49,7 +49,9 @@ public class PointLight implements Light{
         
         // get distance of closest obj hitting ray
         float distanceTraveled = lightRay.getClosestDistanceToAnyObjectAmong(objects);
-        
+        if (distanceTraveled < 0) {
+            return true;
+        }
         if ( distanceTraveled  < distanceCheck - GlobalConstants.acceptableError) {
             return false;
         }

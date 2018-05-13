@@ -93,6 +93,56 @@ public class Ray {
         return reflectRay;
     }
     
+    /**
+     * 
+     * @param hitPt - where ray hits
+     * @param normal - normal of object where ray hits
+     * @param aLight - light being tested
+     * @return true if ray hits the lighted side, false otherwise
+     */
+    public boolean rayCheckSide(FixedVector hitPt, FixedVector normal, Light aLight) {
+        float rayDirDotN = this.getDirectionVector().dot(normal);
+        float lightDotN;
+        float signRay;
+        float signLight=0;
+        
+        if (Math.abs(rayDirDotN)>GlobalConstants.acceptableError) {
+            signRay = Math.abs(rayDirDotN)/rayDirDotN;
+        }
+        else {
+            return false;
+        }
+        if (aLight.getType()==Type.POINT) {
+            FixedVector hitPtToLight = aLight.getPosition().subtractFixed(hitPt);
+            FixedVector hitPtFromLight = hitPtToLight.multConst(-1);
+            lightDotN = hitPtFromLight.dot(normal);
+            if (Math.abs(lightDotN)>GlobalConstants.acceptableError) {
+                signLight = Math.abs(lightDotN)/lightDotN;
+            }
+            else {
+                return true;
+            }
+        }
+        else if (aLight.getType()==Type.DIRECTIONAL) {
+            FixedVector hitPtFromLight = aLight.getDirectionTo();
+            lightDotN = hitPtFromLight.dot(normal);
+            if (Math.abs(lightDotN)>GlobalConstants.acceptableError) {
+                signLight = Math.abs(lightDotN)/lightDotN;
+            }
+            else {
+                return true;
+            }         
+        }
+        
+        if ( Math.abs(signRay+signLight)<GlobalConstants.acceptableError ) {
+            return false;
+        }
+        else {
+            return true;
+        }
+        
+    }
+    
     
     public Color getRayColorFrom(Primitive objHit, FixedVector hitPt, Scene theScene) {
         
@@ -121,12 +171,14 @@ public class Ray {
         List<Float> myspecular = objHit.specular;
         float myshininess = objHit.shininess;
         
-        // for each light....if it reaches object
+        // for each light....if it reaches object && if ray is on correct side
         Map<Integer, Light> allLights = theScene.lightIdMapFinal;
-        for (Light aLight : allLights.values()) {            
-            if (aLight.reaches(hitPt, validObjectsFinal) ){
+        for (Light aLight : allLights.values()) {    
+            // check if ray on correct side
+            boolean rayOnCorrectSide = this.rayCheckSide(hitPt, normal, aLight);
+            
+            if ((aLight.reaches(hitPt, validObjectsFinal) )&& rayOnCorrectSide ){
                 // compute light color
-                FixedVector direction;
                 FixedVector lightcolor = aLight.getColor(); 
                 FixedVector halfDirectn;
                 FixedVector lightDirectionTo = null;
@@ -175,8 +227,6 @@ public class Ray {
         for (int objCount : idSet){
             
             Primitive currentObj = objectIdMap.get(objCount); 
-
-
             if (currentObj.rayHits(this) ){
                 // get distance of start of ray to hit point
                 FixedVector intersectionPt = currentObj.getHitPoint(this);
