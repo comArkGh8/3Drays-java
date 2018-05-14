@@ -144,15 +144,22 @@ public class Ray {
         
     }
     
+    /**
+     * assume ray hits object 
+     * @param objHit
+     * @param hitPt
+     * @param theScene
+     * @return - the color obtained from the object and lights
+     */
     
     public Color getRayColorFrom(Primitive objHit, FixedVector hitPt, Scene theScene) {
         
-        Color colorSum = new Color(0);
+        FixedVector colorSum = new FixedVector(0,0,0);
         // first color from object itself
         // get ambient and emission lists 
         List<Float> ambientInput = objHit.ambient;
         List<Float> emissionInput = objHit.emission;
-        Color colorFromObj = Colors.produceColor(ambientInput, emissionInput);
+        FixedVector colorFromObj = Colors.produceColor(ambientInput, emissionInput);
                 
         // make new list minus objHit
         Map<Integer, Primitive> allObjects = theScene.objectIdMapFinal;
@@ -186,7 +193,7 @@ public class Ray {
                 
                 if (aLight.getType()==Type.POINT) {
                     FixedVector ptPosn = aLight.getPosition();
-                    lightDirectionTo = hitPt.subtractFixed(ptPosn);        
+                    lightDirectionTo = hitPt.subtractFixed(ptPosn).normalize();  
                 }
                 else if (aLight.getType()==Type.DIRECTIONAL) {
                     lightDirectionTo  = aLight.getDirectionTo();
@@ -199,13 +206,18 @@ public class Ray {
                 halfDirectn = halfDirectnRaw.normalize();
                 
                 // add this to color
-                Color colorCurrentLight = Light.computeLight(hitPt, lightcolor, normal, halfDirectn, mydiffuse, myspecular, myshininess);
-                colorSum = Colors.add(colorSum, colorCurrentLight);
+                FixedVector colorCurrentLight = Light.computeLight(lightDirectionTo, lightcolor, normal, halfDirectn, mydiffuse, myspecular, myshininess);
+                FixedVector tempColor = colorSum.addFixed(colorCurrentLight);
+
+                colorSum = new FixedVector(tempColor.x(),tempColor.y(),tempColor.z());
             }
         }
         
-        Color totalColor = Colors.add(colorSum,colorFromObj);
 
+        FixedVector totalColorVec = colorSum.addFixed(colorFromObj);
+
+        // now produce color from vector
+        Color totalColor = new Color(totalColorVec.x(), totalColorVec.y(), totalColorVec.z());
         return totalColor;
     }
     

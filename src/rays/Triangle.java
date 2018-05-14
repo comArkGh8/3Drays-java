@@ -1,6 +1,8 @@
 package rays;
 
 import java.util.Collections;
+import static java.lang.System.out;
+
 import java.util.List;
 
 import org.joml.*;
@@ -17,16 +19,6 @@ public class Triangle extends Primitive {
     public final FixedVector v2;
     public final FixedVector v3;
     public final FixedVector primitiveNormal;
-    
-    // contains coloring properties, these should be final
-    public final List<Float> ambient;
-    public final List<Float> diffuse;
-    public final List<Float> specular;
-    public final List<Float> emission;
-    public final float shininess;
-    
-    private final int id;
-    
             
     // creates a triangle
     public Triangle(int id, FixedVector vert1, FixedVector vert2, FixedVector vert3, List<Float> ambientList, List<Float> diffuseList, List<Float> specularList,

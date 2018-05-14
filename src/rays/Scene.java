@@ -42,7 +42,7 @@ public class Scene {
     public Map<Integer,Light> lightIdMapFinal;
     
     String outputName;
-    int maxDepth;
+    int maxDepth = GlobalConstants.maxDepth;
     
     
     
@@ -69,7 +69,7 @@ public class Scene {
         
         atten = Arrays.asList((float) 1.0, (float) 0, (float) 0);
         
-        maxDepth = 5;
+        //maxDepth = 5;
         
         //String nameOfFile = file.getName();
         String path = file.getAbsolutePath();

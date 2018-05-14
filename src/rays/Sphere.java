@@ -14,15 +14,6 @@ public class Sphere extends Primitive {
     public final float radius;
     public final Shape type;
     
-    // contains coloring properties, these should be final
-    public final List<Float> ambient;
-    public final List<Float> diffuse;
-    public final List<Float> specular;
-    public final List<Float> emission;
-    public final float shininess;
-    
-    private final int id;
-    
     // creates a sphere
     public Sphere(int id, FixedVector centerIn, float radiusIn, List<Float> ambientList, List<Float> diffuseList, List<Float> specularList,
             List<Float> emissionList, float shininess, Matrix4f matrixIn) {

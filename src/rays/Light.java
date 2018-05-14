@@ -1,6 +1,8 @@
 package rays;
 
 import java.awt.Color;
+import static java.lang.System.out;
+
 import java.util.List;
 import java.util.Map;
 
@@ -25,11 +27,11 @@ public interface Light {
 
     
     // ComputeLight Fcn:
-    public static Color computeLight (FixedVector direction, FixedVector lightcolor,
+    public static FixedVector computeLight (FixedVector direction, FixedVector lightcolor,
             FixedVector normal, FixedVector halfvec, List<Float> mydiffuse, List<Float> myspecular,
             float myshininess) {
         
-        float nDotL =  normal.dot(direction);
+        float nDotL =  - normal.dot(direction);
         
         // get entries for lambert
         float[] lambertArray;
@@ -46,8 +48,9 @@ public interface Light {
             phongArray[l] = (float) (myspecular.get(l) * lightcolor.get(l) * 
                     Math.pow (Math.max(nDotH, 0), myshininess));
         }
+        
         // now create color with two arrays
-        Color diffuseSpecularLight = Colors.getColor(lambertArray, phongArray);        
+        FixedVector diffuseSpecularLight = Colors.getColor(lambertArray, phongArray);        
         return diffuseSpecularLight ;
     }
     

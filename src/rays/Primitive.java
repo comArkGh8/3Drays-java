@@ -15,11 +15,13 @@ public abstract class Primitive {
     }
     
     // contains coloring properties, these should be final
-    protected List<Float> ambient;
-    protected List<Float> diffuse;
-    protected List<Float> specular;
-    protected List<Float> emission;
-    protected float shininess;
+    public List<Float> ambient;
+    public List<Float> diffuse;
+    public List<Float> specular;
+    public List<Float> emission;
+    public float shininess;
+    
+    public int id;
     
     private Matrix4f objectMatrix;
   
