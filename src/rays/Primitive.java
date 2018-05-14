@@ -15,11 +15,11 @@ public abstract class Primitive {
     }
     
     // contains coloring properties, these should be final
-    public List<Float> ambient;
-    public List<Float> diffuse;
-    public List<Float> specular;
-    public List<Float> emission;
-    public float shininess;
+    protected FixedVector ambient;
+    protected FixedVector diffuse;
+    protected FixedVector specular;
+    protected FixedVector emission;
+    protected float shininess;
     
     public int id;
     

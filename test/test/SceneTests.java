@@ -4,10 +4,12 @@ import static java.lang.System.out;
 
 import static org.junit.Assert.*;
 
+import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -104,9 +106,9 @@ public class SceneTests {
             int xPos = (int) camEye.x();
             int yPos = (int) camEye.y();
             int zPos = (int) camEye.z();
-            assertEquals("x coor. is -4", -4, xPos);
-            assertEquals("y coor. is -4", -4, yPos);
-            assertEquals("x coor. is 4", 4, zPos);
+            assertEquals("x coor. is -4", 0, xPos);
+            assertEquals("y coor. is -4", -3, yPos);
+            assertEquals("x coor. is 4", 3, zPos);
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -209,6 +211,46 @@ public class SceneTests {
             assertEquals("radius of last sphere is 1", 1, (int) lastSphere.radius);
             
 
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+    
+    @Test
+    public void testScene2ShootRay(){
+        int maxDepth = 1;
+        float error = 0.00001f;
+        GlobalConstants myConstants = new GlobalConstants(error, maxDepth);
+        
+        Optional<File> file = Optional.empty();
+        String pathNameToFile = "/home/sauld/computer_programming/computing_graphics/HW3Java/test_files/scene2.test";
+        file = Optional.of(new File(pathNameToFile));
+        assert(file.get().isFile());
+        Scene testScene2;
+        File fileToInsert = file.get();
+        try {
+            testScene2 = new Scene(fileToInsert);
+            // get objects
+            Map<Integer,Primitive> objectList = testScene2.objectIdMapFinal;
+            // get camera
+            Camera scene2Cam = testScene2.sceneCam;
+            // generate ray in middle left
+            int i = 250;
+            int j = 310;
+            Ray midLftCamRay = scene2Cam.generateCamRay(i, j, 640, 480);
+            // check hit
+            //out.println(midLftCamRay.getClosestObject(objectList).keySet());
+            // object is id 2, get object
+            Primitive obj2 = objectList.get(2);
+            out.println(obj2.ambient);
+            assertTrue("ambient is 1/2", obj2.ambient.get(0) - 0.5 < GlobalConstants.acceptableError);
+            // get hit pt
+            FixedVector hitPtObj2 = midLftCamRay.getClosestObject(objectList).get(2);           
+            // enter into get color
+            Color testColor = midLftCamRay.getRayColorFrom(obj2, hitPtObj2, testScene2);
+            out.println(testColor);
+            
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

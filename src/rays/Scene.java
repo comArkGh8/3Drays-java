@@ -101,7 +101,7 @@ public class Scene {
             // now read the lines
             while ((myLine = bufRead.readLine()) !=null ){
                 myLine.trim();
-                cmdVals = myLine.split(" ");
+                cmdVals = myLine.split("\\s+");
                 String cmd = cmdVals[0];
                 
                 if( !(myLine.startsWith("#")) && (myLine.length()!=0) ) {
@@ -110,11 +110,7 @@ public class Scene {
                     
                     boolean validinput;
                 
-                    // process the line
-                    cmdVals = myLine.split(" ");
-                    // check which command
-                    //String cmd = cmdVals[0];
-                    
+                    // process the line                  
                     switch (cmd) {
                     // sets size
                     case "size": 
@@ -259,7 +255,7 @@ public class Scene {
                         }
                         break;
                     
-                    case "sphere":
+                    case "sphere":                       
                         validinput = readvals(cmdVals, 5);
                         if (validinput) {
                             // create a triangle with own function
@@ -282,7 +278,8 @@ public class Scene {
                                     ambient, diffuse, specular, emission, shininess, sphMatrix);
                                     
                             objectIdMap.put(numObjects, sphToAdd);
-                        } 
+                        }
+
                         break;
                         
                     case "translate":

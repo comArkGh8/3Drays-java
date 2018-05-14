@@ -69,6 +69,8 @@ public class RenderImage {
         Camera theSceneCamera = aScene.sceneCam;
         int sceneW = aScene.width;
         int sceneH = aScene.height;
+        sceneW = 800;
+        sceneH = 600;
         final BufferedImage image = new BufferedImage(sceneW, sceneH, BufferedImage.TYPE_INT_RGB);
 
         try {
