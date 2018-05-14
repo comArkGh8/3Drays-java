@@ -28,7 +28,7 @@ public interface Light {
     
     // ComputeLight Fcn:
     public static FixedVector computeLight (FixedVector direction, FixedVector lightcolor,
-            FixedVector normal, FixedVector halfvec, List<Float> mydiffuse, List<Float> myspecular,
+            FixedVector normal, FixedVector halfvec, FixedVector mydiffuse, FixedVector myspecular,
             float myshininess) {
         
         float nDotL =  - normal.dot(direction);

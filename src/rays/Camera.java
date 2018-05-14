@@ -1,6 +1,8 @@
 package rays;
 
 import java.util.Arrays;
+import static java.lang.System.out;
+
 import java.util.Collections;
 import java.util.List;
 
@@ -8,7 +10,6 @@ import org.joml.Vector3f;
 
 public class Camera {
     public final FixedVector camEye;
-    private final FixedVector camToCenter;
     private final FixedVector camUpVector;
     
     // make as unmodifiable
@@ -25,7 +26,6 @@ public class Camera {
         
         Vector3f camCenterVec = new Vector3f();
         center.sub(eye, camCenterVec);
-        camToCenter = new FixedVector(camCenterVec);
         
         camUpVector = new FixedVector(up);
         
@@ -42,7 +42,7 @@ public class Camera {
         
         Vector3f thirdVec = new Vector3f();
         camCenterVec.cross(secondVec, thirdVec);
-        FixedVector v = new FixedVector(thirdVec);
+        FixedVector v = w.cross(u);
         
         // make frame into list
         List<FixedVector> frameList = Arrays.asList(w,u,v);
@@ -66,20 +66,25 @@ public class Camera {
         FixedVector rayStart = this.camEye;
 
         // use radians!
-        float thetaY = (float) (Math.toRadians(this.fovy)/2.0);
+        double thetaY = Math.toRadians(this.fovy)/2.0f;
 
         // define values as in slides
         // float alpha = tan(fovx/2)*(j-width/2)/(width/2);
         //       fovx = w/h * fovy'
         float widthFlt = (float) width;
         float heightFlt = (float) height;
+        float iFlt = (float) i;
+        float jFlt = (float) j;
         float alpha = (float) ((widthFlt/heightFlt) * Math.tan(thetaY) * 
-                (j+0.5-widthFlt/2.0)/(widthFlt/2.0));
-        float beta = (float) (Math.tan(thetaY) * (heightFlt/2-(i+0.5))/(heightFlt/2.0));
+                (jFlt+0.5-widthFlt/2.0)/(widthFlt/2.0));
+        float beta = (float) (Math.tan(thetaY) * (heightFlt/2.0-(iFlt+0.5))/(heightFlt/2.0));
 
+
+        
         // alpha*u+beta*v-w
         FixedVector directionRaw = (u.multConst(alpha) ).addFixed(v.multConst(beta) )
                 .subtractFixed(w);
+        
         FixedVector direction =directionRaw.normalize(); 
 
         Ray returnRay = new Ray(rayStart, direction);

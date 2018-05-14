@@ -24,10 +24,10 @@ public class Sphere extends Primitive {
         this.center = centerIn;
         this.radius = radiusIn;
         
-        this.ambient = Collections.unmodifiableList(ambientList);
-        this.diffuse = Collections.unmodifiableList(diffuseList);
-        this.specular = Collections.unmodifiableList(diffuseList);
-        this.emission = Collections.unmodifiableList(diffuseList);
+        this.ambient = new FixedVector(ambientList.get(0), ambientList.get(1), ambientList.get(2));
+        this.diffuse = new FixedVector(diffuseList.get(0), diffuseList.get(1), diffuseList.get(2));
+        this.specular = new FixedVector(specularList.get(0), specularList.get(1), specularList.get(2));
+        this.emission = new FixedVector(emissionList.get(0), emissionList.get(1), emissionList.get(2));
         this.shininess = shininess;
         
         // set the matrix

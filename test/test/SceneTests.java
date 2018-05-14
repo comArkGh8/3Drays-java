@@ -236,20 +236,31 @@ public class SceneTests {
             // get camera
             Camera scene2Cam = testScene2.sceneCam;
             // generate ray in middle left
-            int i = 250;
-            int j = 310;
+            int i = 0;
+            int j = 0;
             Ray midLftCamRay = scene2Cam.generateCamRay(i, j, 640, 480);
             // check hit
             //out.println(midLftCamRay.getClosestObject(objectList).keySet());
+
+            // get hit pt
+            FixedVector hitPt = midLftCamRay.getClosestObject(objectList).get(10);
+            // get triangle:
+            Triangle tri10 = (Triangle) objectList.get(10);
+            // ray should not hit 
+            assertFalse("should not hit!", tri10.rayHits(midLftCamRay));
+            
+
+            
+            
+            
             // object is id 2, get object
             Primitive obj2 = objectList.get(2);
-            out.println(obj2.ambient);
-            assertTrue("ambient is 1/2", obj2.ambient.get(0) - 0.5 < GlobalConstants.acceptableError);
+            assertTrue("ambient is 1/2", obj2.getAmbient().get(0) - 0.5 < GlobalConstants.acceptableError);
             // get hit pt
-            FixedVector hitPtObj2 = midLftCamRay.getClosestObject(objectList).get(2);           
+            //FixedVector hitPtObj2 = midLftCamRay.getClosestObject(objectList).get(2);           
             // enter into get color
-            Color testColor = midLftCamRay.getRayColorFrom(obj2, hitPtObj2, testScene2);
-            out.println(testColor);
+            //Color testColor = midLftCamRay.getRayColorFrom(obj2, hitPtObj2, testScene2);
+            //out.println(testColor);
             
         } catch (IOException e) {
             // TODO Auto-generated catch block

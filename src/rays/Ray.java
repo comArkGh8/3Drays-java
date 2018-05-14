@@ -157,8 +157,8 @@ public class Ray {
         FixedVector colorSum = new FixedVector(0,0,0);
         // first color from object itself
         // get ambient and emission lists 
-        List<Float> ambientInput = objHit.ambient;
-        List<Float> emissionInput = objHit.emission;
+        FixedVector ambientInput = objHit.ambient;
+        FixedVector emissionInput = objHit.emission;
         FixedVector colorFromObj = Colors.produceColor(ambientInput, emissionInput);
                 
         // make new list minus objHit
@@ -175,8 +175,8 @@ public class Ray {
         
         // get normal of object at hit point, and its properties
         FixedVector normal = objHit.getNormalAt(hitPt);
-        List<Float> mydiffuse = objHit.diffuse;
-        List<Float> myspecular = objHit.specular;
+        FixedVector mydiffuse = objHit.diffuse;
+        FixedVector myspecular = objHit.specular;
         float myshininess = objHit.shininess;
         
         // for each light....if it reaches object && if ray is on correct side

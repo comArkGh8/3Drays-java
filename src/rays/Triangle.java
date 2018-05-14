@@ -19,13 +19,7 @@ public class Triangle extends Primitive {
     public final FixedVector v2;
     public final FixedVector v3;
     public final FixedVector primitiveNormal;
-    
-    // contains coloring properties, these should be final
-    public final List<Float> ambient;
-    public final List<Float> diffuse;
-    public final List<Float> specular;
-    public final List<Float> emission;
-    public final float shininess;
+
             
     // creates a triangle
     public Triangle(int id, FixedVector vert1, FixedVector vert2, FixedVector vert3, List<Float> ambientList, List<Float> diffuseList, List<Float> specularList,
@@ -38,10 +32,10 @@ public class Triangle extends Primitive {
         this.v2 = vert2;
         this.v3 = vert3;
 
-        this.ambient = Collections.unmodifiableList(ambientList);
-        this.diffuse = Collections.unmodifiableList(diffuseList);
-        this.specular = Collections.unmodifiableList(specularList);
-        this.emission = Collections.unmodifiableList(emissionList);
+        this.ambient = new FixedVector(ambientList.get(0), ambientList.get(1), ambientList.get(2));
+        this.diffuse = new FixedVector(diffuseList.get(0), diffuseList.get(1), diffuseList.get(2));
+        this.specular = new FixedVector(specularList.get(0), specularList.get(1), specularList.get(2));
+        this.emission = new FixedVector(emissionList.get(0), emissionList.get(1), emissionList.get(2));
         this.shininess = shininess;
         
         FixedVector side1 = this.v2.subtractFixed(this.v1);
@@ -116,7 +110,6 @@ public class Triangle extends Primitive {
         FixedVector startRay = primitiveRay.getStartVector();
         FixedVector dirRay = primitiveRay.getDirectionVector();
         
-        
         // intersection time:
         float t = (d - nVec.dot(startRay))/(nVec.dot(dirRay));
         
@@ -144,6 +137,7 @@ public class Triangle extends Primitive {
 
         // this is in actual space!
         FixedVector pointOnPlane = this.rayPlaneIntersection(aRay);
+
         // check to see if in direction of rayDirection
         FixedVector rayStartToPt = pointOnPlane.subtractFixed(aRay.getStartVector());
         if (rayStartToPt.dot(aRay.getDirectionVector())<GlobalConstants.acceptableError) {
@@ -170,13 +164,13 @@ public class Triangle extends Primitive {
             beta = (-side1Tri.z() * ptToPrimTri.y() + side1Tri.y() * ptToPrimTri.z())/
                             (sidesCrossProd.x());
         }
-        else if (sidesCrossProd.y()  > GlobalConstants.acceptableError){
+        else if (Math.abs(sidesCrossProd.y())  > GlobalConstants.acceptableError){
             alpha = (side2Tri.x() * ptToPrimTri.z() - side2Tri.z() * ptToPrimTri.x())/
                             (sidesCrossProd.y());
             beta = (-side1Tri.x() * ptToPrimTri.z() + side1Tri.z() * ptToPrimTri.x())/
                             (sidesCrossProd.y());
         }
-        else if (sidesCrossProd.z()  > GlobalConstants.acceptableError){
+        else if (Math.abs(sidesCrossProd.z())  > GlobalConstants.acceptableError){
             alpha = (side2Tri.y() * ptToPrimTri.x() - side2Tri.x() * ptToPrimTri.y())/
                             (sidesCrossProd.z());
             beta = (-side1Tri.y() * ptToPrimTri.x() + side1Tri.x() * ptToPrimTri.y())/

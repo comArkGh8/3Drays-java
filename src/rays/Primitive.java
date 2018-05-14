@@ -29,6 +29,10 @@ public abstract class Primitive {
         this.objectMatrix = matrixIn;
     }
     
+    public FixedVector getAmbient() {
+        return this.ambient;
+    }
+    
     public Matrix4f getTransformMatrix() {
         return this.objectMatrix;
     }
@@ -39,7 +43,6 @@ public abstract class Primitive {
     
     public abstract FixedVector getNormalAt(FixedVector point);
     
-    // TO ADD
     public abstract boolean rayHits(Ray aRay);
     
     public abstract FixedVector getHitPoint(Ray aRay);
