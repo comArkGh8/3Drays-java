@@ -230,6 +230,35 @@ public class Triangle extends Primitive {
         // set the matrix as identity
         this.setTransformMatrix(triMatrix);
     }
+    
+    // for unit tests
+    // creates tri from just input vertices
+    public Triangle(FixedVector vert1, FixedVector vert2, FixedVector vert3, Matrix4f triMatrix) {
+        this.type = Shape.TRIANGLE;
+        
+        this.v1 = vert1;
+        this.v2 = vert2;
+        this.v3 = vert3;
+        
+        this.ambient = null;
+        this.diffuse = null;
+        this.specular = null;
+        this.emission = null;
+        this.shininess = 0.0f;
+        
+        this.id = 0;
+        
+        FixedVector side1 = this.v2.subtractFixed(this.v1);
+        FixedVector side2 = this.v3.subtractFixed(this.v1);
+
+        // normal is cross product
+        FixedVector rawPrimitiveNormal = side1.cross(side2);
+        
+        this.primitiveNormal = rawPrimitiveNormal.normalize();
+        
+        // set the matrix as identity
+        this.setTransformMatrix(triMatrix);
+    }
 
 
 

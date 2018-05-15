@@ -18,7 +18,7 @@ public class Main {
         
         // generate scene
         Optional<File> file = Optional.empty();
-        String pathNameToFile = "/home/sauld/computer_programming/computing_graphics/HW3Java/test_files/scene2.test";
+        String pathNameToFile = "D:\\eclipse workspace\\3DRays-java\\test_files\\scene1.test";
         file = Optional.of(new File(pathNameToFile));
         File fileToInsert = file.get();
         Scene fileScene = new Scene(fileToInsert);
@@ -27,7 +27,7 @@ public class Main {
         //out.println(fileScene.height);
         // END
         
-        String pathNameToOutFile = "/home/sauld/computer_programming/computing_graphics/HW3Java/my_images/output.png";
+        String pathNameToOutFile = "D:\\eclipse workspace\\3DRays-java\\my_image_files\\output.png";
         File outFile = new File(pathNameToOutFile);
         try {
             RenderImage.draw(fileScene, outFile);

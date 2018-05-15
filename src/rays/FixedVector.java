@@ -2,6 +2,9 @@ package rays;
 
 import org.joml.*;
 import java.lang.Math;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class FixedVector {
     
@@ -80,12 +83,8 @@ public class FixedVector {
     
     // takes dot product of fixed vector with fixed vector
     public float dot(FixedVector fixedV) {
-        // first create Vector3f for dot product
-        Vector3fc givenVector = new Vector3f(this.x, this.y, this.z);
-        Vector3fc inputVector = new Vector3f(fixedV.x, fixedV.y, fixedV.z);
-               
-        // get dot product from joml
-        float dotResult = givenVector.dot(inputVector);
+
+        float dotResult = this.x * fixedV.x() + this.y * fixedV.y() + this.z * fixedV.z();
         
         return dotResult;
     }
@@ -128,6 +127,12 @@ public class FixedVector {
         float h2 = this.x * this.x + this.y * this.y + this.z * this.z;
         float l = (float) Math.sqrt(h2);
         return l;
+    }
+    
+    public String toString() {        
+        List FixedVecArray = Arrays.asList(this.x(), this.y(), this.z());
+        String outString = FixedVecArray.toString();
+        return outString;
     }
     
 

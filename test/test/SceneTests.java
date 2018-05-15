@@ -224,7 +224,7 @@ public class SceneTests {
         GlobalConstants myConstants = new GlobalConstants(error, maxDepth);
         
         Optional<File> file = Optional.empty();
-        String pathNameToFile = "/home/sauld/computer_programming/computing_graphics/HW3Java/test_files/scene2.test";
+        String pathNameToFile = "D:\\eclipse workspace\\3DRays-java\\test_files\\scene2.test";
         file = Optional.of(new File(pathNameToFile));
         assert(file.get().isFile());
         Scene testScene2;
@@ -238,20 +238,17 @@ public class SceneTests {
             // generate ray in middle left
             int i = 0;
             int j = 0;
-            Ray midLftCamRay = scene2Cam.generateCamRay(i, j, 640, 480);
+            Ray upCornerCamRay = scene2Cam.generateCamRay(i, j, 640, 480);
             // check hit
             //out.println(midLftCamRay.getClosestObject(objectList).keySet());
 
             // get hit pt
-            FixedVector hitPt = midLftCamRay.getClosestObject(objectList).get(10);
+            FixedVector hitPt = upCornerCamRay.getClosestObject(objectList).get(10);
             // get triangle:
             Triangle tri10 = (Triangle) objectList.get(10);
             // ray should not hit 
-            assertFalse("should not hit!", tri10.rayHits(midLftCamRay));
-            
-
-            
-            
+            assertFalse("should not hit!", tri10.rayHits(upCornerCamRay));
+                    
             
             // object is id 2, get object
             Primitive obj2 = objectList.get(2);
@@ -268,6 +265,124 @@ public class SceneTests {
         }
     }
     
+    @Test
+    public void testScene1ShootRay(){
+        int maxDepth = 1;
+        float error = 0.00001f;
+        GlobalConstants myConstants = new GlobalConstants(error, maxDepth);
+        
+        Optional<File> file = Optional.empty();
+        String pathNameToFile = "D:\\eclipse workspace\\3DRays-java\\test_files\\scene1.test";
+        file = Optional.of(new File(pathNameToFile));
+        assert(file.get().isFile());
+        Scene testScene2;
+        File fileToInsert = file.get();
+        try {
+            testScene2 = new Scene(fileToInsert);
+            // get objects
+            Map<Integer,Primitive> objectList = testScene2.objectIdMapFinal;
+            // get camera
+            Camera scene1Cam = testScene2.sceneCam;
+            
+            // generate ray in middle
+            //Ray midCamRay = scene1Cam.generateCamRay(240, 320, 640, 480);
+            //FixedVector directnTest = midCamRay.getDirectionVector();
+            // out.println(directnTest.x());
+
+            // get ray at top middle
+            Ray midTopCamRay = scene1Cam.generateCamRay(0, 320, 640, 480);
+            FixedVector directnTopTest = midTopCamRay.getDirectionVector();
+            //out.println(directnTopTest.toString());
+
+            FixedVector camToCenterFromFrame = scene1Cam.getCamFrame().get(0).multConst(-1);
+            FixedVector actualCamToCenter = new FixedVector(5,4,-4);
+            
+            float dotFromFram = directnTopTest.dot(camToCenterFromFrame);
+            float actualDot = directnTopTest.dot(actualCamToCenter)/actualCamToCenter.length();
+            
+            assertTrue("dots should be same", Math.abs(actualDot-dotFromFram)<GlobalConstants.acceptableError);            
+            double thetaY = Math.toRadians(scene1Cam.fovy)/2.0;                        
+            assertTrue("fovy should be 30", Math.abs(actualDot-Math.cos(thetaY))<0.01);
+            
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
     
+    @Test
+    public void testScene1ShootRayToFarCorner(){
+        int maxDepth = 1;
+        float error = 0.00001f;
+        GlobalConstants myConstants = new GlobalConstants(error, maxDepth);
+        
+        Optional<File> file = Optional.empty();
+        String pathNameToFile = "D:\\eclipse workspace\\3DRays-java\\test_files\\scene1.test";
+        file = Optional.of(new File(pathNameToFile));
+        assert(file.get().isFile());
+        Scene testScene1;
+        File fileToInsert = file.get();
+        try {
+            testScene1 = new Scene(fileToInsert);
+            // get objects
+            Map<Integer,Primitive> objectList = testScene1.objectIdMapFinal;
+            // get camera
+            Camera scene1Cam = testScene1.sceneCam;        
+            FixedVector w = scene1Cam.getCamFrame().get(0);
+            FixedVector u = scene1Cam.getCamFrame().get(1);
+            FixedVector v = scene1Cam.getCamFrame().get(2);
+            //out.println(w.toString());
+                       
+            // get ray from corner to tri2 v3
+            Triangle tri2 = (Triangle) objectList.get(2);
+            FixedVector smallEp = new FixedVector(0.001f,-0.001f, 0);
+            FixedVector cornerTri2 = tri2.v3.addFixed(smallEp);
+            FixedVector directionToCorner = cornerTri2.subtractFixed(scene1Cam.camEye);           
+            Ray rayToCorner = new Ray(scene1Cam.camEye, directionToCorner);
+            out.println(directionToCorner.normalize().toString());
+            
+            // get intersection with viewing plane
+            // first create triangle in plane
+            FixedVector vert1 = scene1Cam.camEye.addFixed(w.multConst(-1));
+            FixedVector vert2 = scene1Cam.camEye.addFixed(w.multConst(-1)).addFixed(u);
+            FixedVector vert3 = scene1Cam.camEye.addFixed(w.multConst(-1)).addFixed(v);
+            
+            Triangle triInViewPlane = new Triangle(vert1,vert2,vert3,new Matrix4f());
+            FixedVector interPtRayViewPlane = triInViewPlane.rayPlaneIntersection(rayToCorner);
+            // to solve
+            FixedVector solnVec = interPtRayViewPlane.subtractFixed(scene1Cam.camEye).addFixed(w);
+            
+            // get ray at top corner (should hit tri1 or 2
+            FixedVector smallEp2 = new FixedVector(0.00001f,-0.00001f, 0);
+            Ray midTopCamRay = scene1Cam.generateCamRay(18, 154, 640, 480);
+            FixedVector directnTopTest = midTopCamRay.getDirectionVector();
+            out.println(directnTopTest.toString());
+ 
+            
+            // get ray intersection, try color
+            
+            Map<Integer, FixedVector> objIdWithHit = midTopCamRay.getClosestObject(objectList);
+            out.println(objIdWithHit.keySet());
+            
+            Map<Integer, FixedVector> objIdWithHitFromGenerated = rayToCorner.getClosestObject(objectList);
+            out.println(objIdWithHitFromGenerated.keySet());
+            FixedVector hitPt = objIdWithHitFromGenerated.get(2);
+            Primitive objHit = objectList.get(2);
+            
+            // since ray hits, try get color of ray
+            Color cornerColor = midTopCamRay.getRayColorFrom(objHit, hitPt, testScene1);
+            out.println(cornerColor);
+
+            
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+    
+    
+    
+    
+
 
 }

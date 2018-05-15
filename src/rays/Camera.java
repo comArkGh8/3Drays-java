@@ -19,29 +19,17 @@ public class Camera {
     
     
     // init Camera
-    public Camera(Vector3f eye, Vector3f center, Vector3f up, float fieldOV){
+    public Camera(FixedVector eye, FixedVector center, FixedVector up, float fieldOV){
 
         // transform to FixedVectors:   
-        camEye = new FixedVector(eye);
-        
-        Vector3f camCenterVec = new Vector3f();
-        center.sub(eye, camCenterVec);
-        
-        camUpVector = new FixedVector(up);
+        this.camEye = eye;    
+        this.camUpVector = up;
         
         // calculate camera coordinates
-        Vector3f upUnit = new Vector3f();
-        up.normalize(upUnit);
-        
-        camCenterVec.mul(-1).normalize(); // eye - center     
-        FixedVector w = new FixedVector(camCenterVec);
-        
-        Vector3f secondVec = new Vector3f();
-        upUnit.cross(camCenterVec, secondVec);
-        FixedVector u = new FixedVector(secondVec);
-        
-        Vector3f thirdVec = new Vector3f();
-        camCenterVec.cross(secondVec, thirdVec);
+        FixedVector upUnit = up.normalize();
+           
+        FixedVector w = eye.subtractFixed(center).normalize(); // eye - center  
+        FixedVector u = upUnit.cross(w).normalize();
         FixedVector v = w.cross(u);
         
         // make frame into list
@@ -66,25 +54,31 @@ public class Camera {
         FixedVector rayStart = this.camEye;
 
         // use radians!
-        double thetaY = Math.toRadians(this.fovy)/2.0f;
+        double fovyRad = Math.toRadians(this.fovy);
 
         // define values as in slides
         // float alpha = tan(fovx/2)*(j-width/2)/(width/2);
         //       fovx = w/h * fovy'
-        float widthFlt = (float) width;
-        float heightFlt = (float) height;
-        float iFlt = (float) i;
-        float jFlt = (float) j;
-        float alpha = (float) ((widthFlt/heightFlt) * Math.tan(thetaY) * 
-                (jFlt+0.5-widthFlt/2.0)/(widthFlt/2.0));
-        float beta = (float) (Math.tan(thetaY) * (heightFlt/2.0-(iFlt+0.5))/(heightFlt/2.0));
-
-
+        double widthD = (double) width;
+        double heightD = (double) height;
+        double iD = (double) i;
+        double jD = (double) j;
         
+        // for alpha
+        double scaleForWidth = (widthD/heightD); 
+        double scaleFOV = scaleForWidth * Math.tan(fovyRad/2.0);
+        float alpha = (float) (scaleFOV * (jD+0.5-widthD/2.0)/(widthD/2.0));
+        
+        // for beta
+        double FOV = Math.tan(fovyRad/2.0);
+        float beta = (float) (FOV * (heightD/2.0-(iD+0.5))/(heightD/2.0));
         // alpha*u+beta*v-w
-        FixedVector directionRaw = (u.multConst(alpha) ).addFixed(v.multConst(beta) )
-                .subtractFixed(w);
+        // alpha*u
         
+        FixedVector au = u.multConst(alpha);
+        FixedVector bv = v.multConst(beta);
+        FixedVector auPlusbv = au.addFixed(bv);
+        FixedVector directionRaw = auPlusbv.subtractFixed(w);
         FixedVector direction =directionRaw.normalize(); 
 
         Ray returnRay = new Ray(rayStart, direction);

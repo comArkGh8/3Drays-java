@@ -146,19 +146,19 @@ public class Scene {
                             float eyeY = Float.parseFloat(cmdVals[2]);
                             float eyeZ = Float.parseFloat(cmdVals[3]);
 
-                            Vector3f eyeInit = new Vector3f(eyeX, eyeY, eyeZ);
+                            FixedVector eyeInit = new FixedVector(eyeX, eyeY, eyeZ);
                             
                             float origupX = Float.parseFloat(cmdVals[7]);
                             float origupY = Float.parseFloat(cmdVals[8]);
                             float origupZ = Float.parseFloat(cmdVals[9]);
                             
-                            Vector3f origup = new Vector3f(origupX, origupY, origupZ);
+                            FixedVector origup = new FixedVector(origupX, origupY, origupZ);
                             
                             float centerX = Float.parseFloat(cmdVals[4]);
                             float centerY = Float.parseFloat(cmdVals[5]);
                             float centerZ = Float.parseFloat(cmdVals[6]);
                             
-                            Vector3f center = new Vector3f(centerX, centerY, centerZ);
+                            FixedVector center = new FixedVector(centerX, centerY, centerZ);
                             
                             // set fovy to values[10];
                             float fovy = Float.parseFloat(cmdVals[10]);

@@ -15,9 +15,9 @@ public class CameraTest {
     @Test
     public void testCamRayAtCenter() {
 
-        Vector3f eyeVec= new Vector3f(1,1,1);
-        Vector3f centerVec = new Vector3f(0);
-        Vector3f origUpVec = new Vector3f(0,0,1);
+        FixedVector eyeVec= new FixedVector(1,1,1);
+        FixedVector centerVec = new FixedVector(0,0,0);
+        FixedVector origUpVec = new FixedVector(0,0,1);
         Camera testCam = new Camera(eyeVec, centerVec, origUpVec, 30);
         
         FixedVector w = testCam.getCamFrame().get(0);
