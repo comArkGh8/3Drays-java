@@ -18,16 +18,12 @@ public class Main {
         
         // generate scene
         Optional<File> file = Optional.empty();
-        String pathNameToFile = "D:\\eclipse workspace\\3DRays-java\\test_files\\scene1.test";
+        String pathNameToFile = "/home/sauld/computer_programming/computing_graphics/HW3Java/test_files/scene3.test";
         file = Optional.of(new File(pathNameToFile));
         File fileToInsert = file.get();
         Scene fileScene = new Scene(fileToInsert);
         
-        // DEBUGGING!!!!
-        //out.println(fileScene.height);
-        // END
-        
-        String pathNameToOutFile = "D:\\eclipse workspace\\3DRays-java\\my_image_files\\output.png";
+        String pathNameToOutFile = "/home/sauld/computer_programming/computing_graphics/HW3Java/my_images/output.png";
         File outFile = new File(pathNameToOutFile);
         try {
             RenderImage.draw(fileScene, outFile);
