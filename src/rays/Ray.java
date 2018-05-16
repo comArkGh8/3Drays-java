@@ -197,11 +197,9 @@ public class Ray {
                     lightDirectionTo  = aLight.getDirectionTo();
                 }
                 
-                FixedVector reflectDirection = 
-                        Geometry.reflectDirectionVector(lightDirectionTo, normal);
 
                 FixedVector rayDirectionVec = this.direction.normalize();
-                FixedVector halfDirectnRaw = reflectDirection.subtractFixed(rayDirectionVec);
+                FixedVector halfDirectnRaw = lightDirectionTo.addFixed(rayDirectionVec).multConst(-1);
                 FixedVector halfDirectn = halfDirectnRaw.normalize();
                 
                 // add this to color
