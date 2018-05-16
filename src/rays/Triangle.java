@@ -76,7 +76,7 @@ public class Triangle extends Primitive {
         // normal primitive is already normalized
         FixedVector normalPrimitive = this.primitiveNormal;
         // make into Vector3fc
-        Vector3fc inputVector = new Vector3f(normalPrimitive.x(),normalPrimitive.y(),normalPrimitive.z());
+        FixedVector inputVector = new FixedVector(normalPrimitive.x(),normalPrimitive.y(),normalPrimitive.z());
         
         // get objMatrix
         FixedMatrix4 objMatrix = this.getTransformMatrix();

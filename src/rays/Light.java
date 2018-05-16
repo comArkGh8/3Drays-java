@@ -37,16 +37,16 @@ public interface Light {
         float[] lambertArray;
         lambertArray = new float[3];
         for (int l=0; l<3; l++) {
-            lambertArray[l] = mydiffuse.get(l) * lightcolor.get(l) * Math.max (nDotL, 0);
+            lambertArray[l] = mydiffuse.get(l) * lightcolor.get(l) * Math.abs(nDotL);
         }
- 
+        
         float nDotH =  normal.dot(halfvec);
 
         float[] phongArray;
         phongArray = new float[3];
         for (int l=0; l<3; l++) {
             phongArray[l] = (float) (myspecular.get(l) * lightcolor.get(l) * 
-                    Math.pow (Math.max(nDotH, 0), myshininess));
+                    Math.pow (Math.abs(nDotH), myshininess));
         }
         
         // now create color with two arrays

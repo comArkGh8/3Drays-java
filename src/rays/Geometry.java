@@ -15,7 +15,7 @@ public class Geometry {
      * @param mulMatrix - matrix with which to multiply
      * @return - Vec3 result of matrix acting on extended vector
      */
-    public static  FixedVector mat4MultDirVec3 (Vector3fc inVector, FixedMatrix4 mulMatrix) {
+    public static  FixedVector mat4MultDirVec3 (FixedVector inVector, FixedMatrix4 mulMatrix) {
         // write inVector as 4Vec
         Vector4fc inVectorExtended = 
                 new Vector4f(inVector.x(), inVector.y(), inVector.z(), 0.0f);

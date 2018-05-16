@@ -65,7 +65,7 @@ public class Ray {
         FixedVector primitiveFixedStart = Geometry.mat4MultPosVec3(inputStartVector, objInv); 
           
         // transform direction
-        Vector3fc inputDirectionVector = new Vector3f(ray.direction.x(), ray.direction.y(), ray.direction.z());
+        FixedVector inputDirectionVector = new FixedVector(ray.direction.x(), ray.direction.y(), ray.direction.z());
         FixedVector primitiveFixedDir = Geometry.mat4MultDirVec3(inputDirectionVector, objInv); 
         
         // create Ray from start and direction
@@ -208,13 +208,19 @@ public class Ray {
                 FixedVector colorCurrentLight = Light.computeLight(lightDirectionTo, lightcolor, normal, halfDirectn, mydiffuse, myspecular, myshininess);
                 FixedVector tempColor = colorSum.addFixed(colorCurrentLight);
 
+                
+                if (colorCurrentLight.x()> 1) {
+                    out.println(lightcolor.toString());
+                }
+                
+
+                
                 colorSum = new FixedVector(tempColor.x(),tempColor.y(),tempColor.z());
             }
         }
-        
-
+                
         FixedVector totalColorVec = colorSum.addFixed(colorFromObj);
-
+        
         // now produce color from vector
         Color totalColor = new Color(totalColorVec.x(), totalColorVec.y(), totalColorVec.z());
         return totalColor;

@@ -49,13 +49,12 @@ public class Sphere extends Primitive {
         // transform intersection point
         Vector3fc actualPointVec3 = new Vector3f(point.x(),point.y(),point.z());
         FixedVector primitiveIntersectionPtFixed = Geometry.mat4MultPosVec3(actualPointVec3, objInv);
-        Vector3fc primitiveIntersectionPt = new Vector3f(primitiveIntersectionPtFixed.x(),
+        FixedVector primitiveIntersectionPt = new FixedVector(primitiveIntersectionPtFixed.x(),
                 primitiveIntersectionPtFixed.y(),primitiveIntersectionPtFixed.z());       
         
         // get center as Vec3
-        Vector3fc centerVec3 = new Vector3f(this.center.x(), this.center.y(), this.center.z());
-        Vector3f normalAtPrimitiveInterscnPt = new Vector3f();
-        primitiveIntersectionPt.sub(centerVec3, normalAtPrimitiveInterscnPt);
+        FixedVector centerVec3 = new FixedVector(this.center.x(), this.center.y(), this.center.z());       
+        FixedVector normalAtPrimitiveInterscnPt = primitiveIntersectionPt.subtractFixed(centerVec3);
         
         // transform normal with transpose inverse
         FixedMatrix4 transposeInv = objMatrix.normal();
