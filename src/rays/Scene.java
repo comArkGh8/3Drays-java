@@ -245,11 +245,12 @@ public class Scene {
                             // now get transform
                             Matrix4f triMatrix = new Matrix4f();
                             matTransStack.get(triMatrix);
+                            FixedMatrix4 fixedTriMatrix = new FixedMatrix4(triMatrix);
   
                             // now create triangle and enter into objectMap
                             numObjects++;
                             Triangle triToAdd = new Triangle(numObjects, v1, v2, v3, 
-                                    ambient, diffuse, specular, emission, shininess, triMatrix);
+                                    ambient, diffuse, specular, emission, shininess, fixedTriMatrix);
                                     
                             objectIdMap.put(numObjects, triToAdd);
                         }
@@ -271,11 +272,12 @@ public class Scene {
                             // now get transform
                             Matrix4f sphMatrix = new Matrix4f();
                             matTransStack.get(sphMatrix);
+                            FixedMatrix4 fixedSphMatrix = new FixedMatrix4(sphMatrix);
   
                             // now create sph and enter into objectMap
                             numObjects++;
                             Sphere sphToAdd = new Sphere(numObjects, center, radius, 
-                                    ambient, diffuse, specular, emission, shininess, sphMatrix);
+                                    ambient, diffuse, specular, emission, shininess, fixedSphMatrix);
                                     
                             objectIdMap.put(numObjects, sphToAdd);
                         }

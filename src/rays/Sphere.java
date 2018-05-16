@@ -16,7 +16,7 @@ public class Sphere extends Primitive {
     
     // creates a sphere
     public Sphere(int id, FixedVector centerIn, float radiusIn, List<Float> ambientList, List<Float> diffuseList, List<Float> specularList,
-            List<Float> emissionList, float shininess, Matrix4f matrixIn) {
+            List<Float> emissionList, float shininess, FixedMatrix4 matrixIn) {
         
         this.id = id;
         this.type = Shape.SPHERE;
@@ -43,9 +43,8 @@ public class Sphere extends Primitive {
     public FixedVector getNormalAt(FixedVector point) {
 
         // get matrix and inverse
-        Matrix4f objMatrix = this.getTransformMatrix();
-        Matrix4f objInv = new Matrix4f();
-        objMatrix.invert(objInv);
+        FixedMatrix4 objMatrix = this.getTransformMatrix();
+        FixedMatrix4 objInv = objMatrix.invert();
         
         // transform intersection point
         Vector3fc actualPointVec3 = new Vector3f(point.x(),point.y(),point.z());
@@ -59,7 +58,7 @@ public class Sphere extends Primitive {
         primitiveIntersectionPt.sub(centerVec3, normalAtPrimitiveInterscnPt);
         
         // transform normal with transpose inverse
-        Matrix4f transposeInv = objMatrix.normal();
+        FixedMatrix4 transposeInv = objMatrix.normal();
         FixedVector normalAtIntersectionRaw = Geometry.mat4MultDirVec3(normalAtPrimitiveInterscnPt, transposeInv);
         FixedVector normalAtIntersection = normalAtIntersectionRaw.normalize();       
         
@@ -73,7 +72,7 @@ public class Sphere extends Primitive {
         float discriminant;
 
         // first transform ray to primitive
-        Matrix4f sphMatrix = this.getTransformMatrix();
+        FixedMatrix4 sphMatrix = this.getTransformMatrix();
         Ray primitiveRay = Ray.transformRayToPrimitive(ray, sphMatrix);
 
         FixedVector rayDirn = primitiveRay.getDirectionVector();
@@ -121,7 +120,7 @@ public class Sphere extends Primitive {
          FixedVector sphCenter = this.center;
     
          // first transform ray to primitive
-         Matrix4f objMatrix = this.getTransformMatrix();
+         FixedMatrix4 objMatrix = this.getTransformMatrix();
          Ray primitiveRay = Ray.transformRayToPrimitive(ray, objMatrix);
     
          // get (primitve) ray start and direction
@@ -174,7 +173,7 @@ public class Sphere extends Primitive {
     
     // for unit tests;
     // creates sphere with just radius and center
-    public Sphere(Vector3f centerIn, float radiusIn, Matrix4f matrixIn) {
+    public Sphere(Vector3f centerIn, float radiusIn, FixedMatrix4 matrixIn) {
         
         this.type = Shape.SPHERE;
         

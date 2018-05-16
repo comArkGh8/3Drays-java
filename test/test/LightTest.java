@@ -13,6 +13,7 @@ import static java.lang.System.out;
 import org.junit.Test;
 
 import rays.DirectionalLight;
+import rays.FixedMatrix4;
 import rays.FixedVector;
 import rays.Geometry;
 import rays.Light;
@@ -59,18 +60,19 @@ public class LightTest {
         // setup test scene
         Matrix4f posMatrix = new Matrix4f();
         posMatrix.translate(-2.0f, 0, 0); 
-        posMatrix.scale(1.0f, 2.0f, 1.0f);       
+        posMatrix.scale(1.0f, 2.0f, 1.0f); 
+        FixedMatrix4 fixedPosMatrix= new FixedMatrix4(posMatrix);
         
         // make tri 1
         Vector3f vert1 = new Vector3f(1.0f, 0, 0);
         Vector3f vert2 = new Vector3f(0, 1.0f, 0);
         Vector3f vert3 = new Vector3f(0, 0, 1.0f);       
-        Triangle testTri = new Triangle(vert1, vert2, vert3, new Matrix4f());
+        Triangle testTri = new Triangle(vert1, vert2, vert3, new FixedMatrix4());
         
         // make sphere     
         Vector3f center = new Vector3f(0, 0, 0);
         float radius = 1.0f;       
-        Sphere testSph = new Sphere(center, radius, posMatrix);
+        Sphere testSph = new Sphere(center, radius, fixedPosMatrix);
         
         // make the list of objects
         Map<Integer,Primitive> justTri= new HashMap();

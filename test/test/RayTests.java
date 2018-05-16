@@ -25,13 +25,14 @@ public class RayTests {
         Vector4f col3 = new Vector4f(0,0,0,1.0f);
         
         Matrix4f scaleMatrix = new Matrix4f(col0,col1,col2,col3);
+        FixedMatrix4 fixedScaleMatrix= new FixedMatrix4(scaleMatrix);
        
         // make ray (1,1)
         FixedVector testStart = new FixedVector(0,0,0);
         FixedVector testDir = new FixedVector(1.0f,1.0f,0);
         Ray xyRay = new Ray(testStart, testDir);
         
-        Ray xfrmRay = Ray.transformRayToPrimitive(xyRay, scaleMatrix);
+        Ray xfrmRay = Ray.transformRayToPrimitive(xyRay, fixedScaleMatrix);
         FixedVector xfrmStart = xfrmRay.getStartVector();
         FixedVector xfrmDir = xfrmRay.getDirectionVector();
         
@@ -72,7 +73,7 @@ public class RayTests {
         Vector3f vert1 = new Vector3f(1.0f, 0, 0);
         Vector3f vert2 = new Vector3f(0, 1.0f, 0);
         Vector3f vert3 = new Vector3f(0, 0, 1.0f);       
-        Triangle testTri = new Triangle(vert1, vert2, vert3, new Matrix4f());
+        Triangle testTri = new Triangle(vert1, vert2, vert3, new FixedMatrix4());
         
         FixedVector reflectPt = testTri.rayPlaneIntersection(xyRay); // = (0.5, 0.5, 0.5)
         FixedVector testNormal = new FixedVector(1, 1, 1);
@@ -99,19 +100,20 @@ public class RayTests {
         
         Matrix4f posMatrix = new Matrix4f();
         posMatrix.translate(-2.0f, 0, 0); 
-        posMatrix.scale(2.0f, 1.0f, 1.0f);       
+        posMatrix.scale(2.0f, 1.0f, 1.0f);   
+        FixedMatrix4 fixedPosMatrix= new FixedMatrix4(posMatrix);
         
         // make tri 1
         Vector3f vert1 = new Vector3f(1.0f, 0, 0);
         Vector3f vert2 = new Vector3f(0, 1.0f, 0);
         Vector3f vert3 = new Vector3f(0, 0, 1.0f);       
-        Triangle testTri = new Triangle(vert1, vert2, vert3, new Matrix4f());
+        Triangle testTri = new Triangle(vert1, vert2, vert3, new FixedMatrix4());
         
         // make tri 2
         Vector3f vert21 = new Vector3f(1.0f, 0, 0);
         Vector3f vert22 = new Vector3f(0, 1.0f, 0);
         Vector3f vert23 = new Vector3f(0, 0, 1.0f);       
-        Triangle testTri2 = new Triangle(vert1, vert2, vert3, posMatrix);
+        Triangle testTri2 = new Triangle(vert1, vert2, vert3, fixedPosMatrix);
         
         Map<Integer,Primitive> idTriMap = new HashMap();       
         idTriMap.put(1, testTri);
@@ -134,19 +136,20 @@ public class RayTests {
         
         Matrix4f posMatrix = new Matrix4f();
         posMatrix.translate(-2.0f, 0, 0); 
-        //posMatrix.scale(2.0f, 1.0f, 1.0f);       
+        //posMatrix.scale(2.0f, 1.0f, 1.0f); 
+        FixedMatrix4 fixedPosMatrix= new FixedMatrix4(posMatrix);
         
         // make tri 1
         Vector3f vert1 = new Vector3f(1.0f, 0, 0);
         Vector3f vert2 = new Vector3f(0, 1.0f, 0);
         Vector3f vert3 = new Vector3f(0, 0, 1.0f);       
-        Triangle testTri = new Triangle(vert1, vert2, vert3, new Matrix4f());
+        Triangle testTri = new Triangle(vert1, vert2, vert3, new FixedMatrix4());
         
         // make tri 2
         Vector3f vert21 = new Vector3f(1.0f, 0, 0);
         Vector3f vert22 = new Vector3f(0, 1.0f, 0);
         Vector3f vert23 = new Vector3f(0, 0, 1.0f);       
-        Triangle testTri2 = new Triangle(vert1, vert2, vert3, posMatrix);
+        Triangle testTri2 = new Triangle(vert1, vert2, vert3, fixedPosMatrix);
         
         Map<Integer,Primitive> idTriMap = new HashMap();       
         idTriMap.put(1, testTri);
@@ -170,19 +173,20 @@ public class RayTests {
         
         Matrix4f posMatrix = new Matrix4f();
         posMatrix.translate(-2.0f, 0, 0); 
-        posMatrix.scale(1.0f, 2.0f, 1.0f);       
+        posMatrix.scale(1.0f, 2.0f, 1.0f);
+        FixedMatrix4 fixedPosMatrix= new FixedMatrix4(posMatrix);
         
         // make tri 1
         Vector3f vert1 = new Vector3f(1.0f, 0, 0);
         Vector3f vert2 = new Vector3f(0, 1.0f, 0);
         Vector3f vert3 = new Vector3f(0, 0, 1.0f);       
-        Triangle testTri = new Triangle(vert1, vert2, vert3, new Matrix4f());
+        Triangle testTri = new Triangle(vert1, vert2, vert3, new FixedMatrix4());
         
         // make sphere     
         Vector3f center = new Vector3f(0, 0, 0);
         float radius = 1.0f;
        
-        Sphere testSph = new Sphere(center, radius, posMatrix);
+        Sphere testSph = new Sphere(center, radius, fixedPosMatrix);
         
         Map<Integer,Primitive> idTriMap = new HashMap();       
         idTriMap.put(1, testTri);
@@ -217,18 +221,19 @@ public class RayTests {
         // setup test scene
         Matrix4f posMatrix = new Matrix4f();
         posMatrix.translate(-2.0f, 0, 0); 
-        posMatrix.scale(1.0f, 2.0f, 1.0f);       
+        posMatrix.scale(1.0f, 2.0f, 1.0f);  
+        FixedMatrix4 fixedPosMatrix= new FixedMatrix4(posMatrix);
         
         // make tri 1
         Vector3f vert1 = new Vector3f(1.0f, 0, 0);
         Vector3f vert2 = new Vector3f(0, 1.0f, 0);
         Vector3f vert3 = new Vector3f(0, 0, 1.0f);       
-        Triangle testTri = new Triangle(vert1, vert2, vert3, new Matrix4f());
+        Triangle testTri = new Triangle(vert1, vert2, vert3, new FixedMatrix4());
         
         // make sphere     
         Vector3f center = new Vector3f(0, 0, 0);
         float radius = 1.0f;       
-        Sphere testSph = new Sphere(center, radius, posMatrix);
+        Sphere testSph = new Sphere(center, radius, fixedPosMatrix);
         
         
         // make pt Light at (1,1,1) with red color

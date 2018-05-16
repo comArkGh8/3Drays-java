@@ -8,6 +8,7 @@ import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.junit.Test;
 
+import rays.FixedMatrix4;
 import rays.FixedVector;
 import rays.GlobalConstants;
 import rays.Ray;
@@ -24,6 +25,7 @@ public class SphereTest {
         Vector4f col3 = new Vector4f(0,0,0,1.0f);
         
         Matrix4f scaleMatrix = new Matrix4f(col0,col1,col2,col3);
+        FixedMatrix4 fixedScaleMatrix = new FixedMatrix4(scaleMatrix);
         
         Vector3f center = new Vector3f(0, 0, 0);
         float radius = 1.0f;
@@ -31,7 +33,7 @@ public class SphereTest {
         FixedVector inputPt = new FixedVector(0,0,1.0f);
 
         
-        Sphere testSph = new Sphere(center, radius, scaleMatrix);
+        Sphere testSph = new Sphere(center, radius, fixedScaleMatrix);
         //out.println(testSph.getNormalAt(inputPt).x());
         //out.println(testSph.getNormalAt(inputPt).y());
         //out.println(testSph.getNormalAt(inputPt).z());
@@ -45,13 +47,14 @@ public class SphereTest {
         posMatrix.translate(2.0f, 0, 0); 
         posMatrix.scale(2.0f, 1.0f, 1.0f);       
         //out.println(posMatrix);
+        FixedMatrix4 fixedPosMatrix = new FixedMatrix4(posMatrix);
         
         Vector3f center = new Vector3f(0, 0, 0);
         float radius = 1.0f;
         
         FixedVector inputPt = new FixedVector(3, 0.8660254037844386f, 0);
         
-        Sphere testSph = new Sphere(center, radius, posMatrix);
+        Sphere testSph = new Sphere(center, radius, fixedPosMatrix);
                 
         //out.println(testSph.getNormalAt(inputPt).x());
         //out.println(testSph.getNormalAt(inputPt).y());
@@ -67,7 +70,7 @@ public class SphereTest {
         Vector3f center = new Vector3f(0, 0, 0);
         float r = 1;
         
-        Sphere testSphere = new Sphere(center, r, new Matrix4f());
+        Sphere testSphere = new Sphere(center, r, new FixedMatrix4());
 
         FixedVector rayStart = new FixedVector(2.0f, 2.0f, 2.0f);
         FixedVector rayDirectionTo = new FixedVector(-2.0f, -2.0f, -2.0f);
@@ -89,11 +92,12 @@ public class SphereTest {
         posMatrix.translate(4.0f, 0, 0); 
         posMatrix.scale(2.0f, 1.0f, 1.0f);       
         //out.println(posMatrix);
+        FixedMatrix4 fixedPosMatrix = new FixedMatrix4(posMatrix);
         
         Vector3f center = new Vector3f(0, 0, 0);
         float radius = 1.0f;        
         
-        Sphere testSphere = new Sphere(center, radius, posMatrix);
+        Sphere testSphere = new Sphere(center, radius, fixedPosMatrix);
         
 
         FixedVector rayStart = new FixedVector(2.0f, 2.0f, 2.0f);

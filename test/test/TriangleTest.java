@@ -6,6 +6,7 @@ import static java.lang.System.out;
 import org.joml.*;
 import org.junit.Test;
 
+import rays.FixedMatrix4;
 import rays.FixedVector;
 import rays.GlobalConstants;
 import rays.Ray;
@@ -21,12 +22,13 @@ public class TriangleTest {
         Vector4f col3 = new Vector4f(0,0,0,1.0f);
         
         Matrix4f scaleMatrix = new Matrix4f(col0,col1,col2,col3);
+        FixedMatrix4 fixedScaleMatrix = new FixedMatrix4(scaleMatrix);
         
         Vector3f vert1 = new Vector3f(1.0f, 0, 0);
         Vector3f vert2 = new Vector3f(0, 1.0f, 0);
         Vector3f vert3 = new Vector3f(0, 0, 1.0f);
         
-        Triangle testTri = new Triangle(vert1, vert2, vert3, scaleMatrix);
+        Triangle testTri = new Triangle(vert1, vert2, vert3, fixedScaleMatrix);
         //out.println(testTri.getNormalAt(null).x());
         //out.println(testTri.getNormalAt(null).y());
         //out.println(testTri.getNormalAt(null).z());
@@ -41,7 +43,7 @@ public class TriangleTest {
         Vector3f vert2 = new Vector3f(0, 1.0f, 0);
         Vector3f vert3 = new Vector3f(0, 0, 1.0f);
         
-        Triangle testTri = new Triangle(vert1, vert2, vert3, new Matrix4f());
+        Triangle testTri = new Triangle(vert1, vert2, vert3, new FixedMatrix4());
 
         FixedVector rayStart = new FixedVector(2.0f, 2.0f, 2.0f);
         FixedVector rayDirection = new FixedVector(-2.0f, 0, 0);
@@ -66,7 +68,7 @@ public class TriangleTest {
         Vector3f vert2 = new Vector3f(0, 1.0f, 0);
         Vector3f vert3 = new Vector3f(0, 0, 1.0f);
         
-        Triangle testTri = new Triangle(vert1, vert2, vert3, new Matrix4f());
+        Triangle testTri = new Triangle(vert1, vert2, vert3, new FixedMatrix4());
 
         FixedVector rayStart = new FixedVector(2.0f, 2.0f, 2.0f);
         FixedVector rayDirectionTo = new FixedVector(-2.0f, -2.0f, -2.0f);

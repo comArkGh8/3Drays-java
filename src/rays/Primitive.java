@@ -23,9 +23,9 @@ public abstract class Primitive {
     
     public int id;
     
-    private Matrix4f objectMatrix;
+    private FixedMatrix4 objectMatrix;
   
-    protected void setTransformMatrix(Matrix4f matrixIn) {
+    protected void setTransformMatrix(FixedMatrix4 matrixIn) {
         this.objectMatrix = matrixIn;
     }
     
@@ -33,7 +33,7 @@ public abstract class Primitive {
         return this.ambient;
     }
     
-    public Matrix4f getTransformMatrix() {
+    public FixedMatrix4 getTransformMatrix() {
         return this.objectMatrix;
     }
     

@@ -180,7 +180,7 @@ public class SceneTests {
             
             // get matrix of 5th tri
             Primitive fifthTri = testScene.objectIdMapFinal.get(5);
-            Matrix4f fifthMat = fifthTri.getTransformMatrix();
+            FixedMatrix4 fifthMat = fifthTri.getTransformMatrix();
             assertEquals("3,4 entry is -2", -2, (int) fifthMat.m32());
             //out.println(fifthMat);
 
@@ -339,7 +339,7 @@ public class SceneTests {
             FixedVector cornerTri2 = tri2.v3.addFixed(smallEp);
             FixedVector directionToCorner = cornerTri2.subtractFixed(scene1Cam.camEye);           
             Ray rayToCorner = new Ray(scene1Cam.camEye, directionToCorner);
-            out.println(directionToCorner.normalize().toString());
+            //out.println(directionToCorner.normalize().toString());
             
             // get intersection with viewing plane
             // first create triangle in plane
@@ -347,7 +347,7 @@ public class SceneTests {
             FixedVector vert2 = scene1Cam.camEye.addFixed(w.multConst(-1)).addFixed(u);
             FixedVector vert3 = scene1Cam.camEye.addFixed(w.multConst(-1)).addFixed(v);
             
-            Triangle triInViewPlane = new Triangle(vert1,vert2,vert3,new Matrix4f());
+            Triangle triInViewPlane = new Triangle(vert1,vert2,vert3,new FixedMatrix4());
             FixedVector interPtRayViewPlane = triInViewPlane.rayPlaneIntersection(rayToCorner);
             // to solve
             FixedVector solnVec = interPtRayViewPlane.subtractFixed(scene1Cam.camEye).addFixed(w);
@@ -356,23 +356,60 @@ public class SceneTests {
             FixedVector smallEp2 = new FixedVector(0.00001f,-0.00001f, 0);
             Ray midTopCamRay = scene1Cam.generateCamRay(18, 154, 640, 480);
             FixedVector directnTopTest = midTopCamRay.getDirectionVector();
-            out.println(directnTopTest.toString());
+            //out.println(directnTopTest.toString());
  
             
             // get ray intersection, try color
             
             Map<Integer, FixedVector> objIdWithHit = midTopCamRay.getClosestObject(objectList);
-            out.println(objIdWithHit.keySet());
+            //out.println(objIdWithHit.keySet());
             
             Map<Integer, FixedVector> objIdWithHitFromGenerated = rayToCorner.getClosestObject(objectList);
-            out.println(objIdWithHitFromGenerated.keySet());
+            //out.println(objIdWithHitFromGenerated.keySet());
             FixedVector hitPt = objIdWithHitFromGenerated.get(2);
             Primitive objHit = objectList.get(2);
             
             // since ray hits, try get color of ray
             Color cornerColor = midTopCamRay.getRayColorFrom(objHit, hitPt, testScene1);
-            out.println(cornerColor);
+            //out.println(cornerColor);
 
+            
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+    
+    @Test
+    public void testScene3GetMatrices(){
+        int maxDepth = 1;
+        float error = 0.00001f;
+        GlobalConstants myConstants = new GlobalConstants(error, maxDepth);
+        
+        Optional<File> file = Optional.empty();
+        String pathNameToFile = "D:\\eclipse workspace\\3DRays-java\\test_files\\scene3.test";
+        file = Optional.of(new File(pathNameToFile));
+        assert(file.get().isFile());
+        Scene testScene3;
+        File fileToInsert = file.get();
+        try {
+            testScene3 = new Scene(fileToInsert);
+            // get objects
+            Map<Integer,Primitive> objectList = testScene3.objectIdMapFinal;
+            // matrix for first tris are same, just scale
+            Triangle tri1 = (Triangle) objectList.get(1);
+            // 13 has scale and translate
+            Triangle tri13 = (Triangle) objectList.get(13);
+            FixedMatrix4 tri13Mat = tri13.getTransformMatrix();
+            out.println(tri13Mat);
+
+            // create ray and transform
+            Camera scene3Cam = testScene3.sceneCam; 
+            Ray midCamRay = scene3Cam.generateCamRay(100, 320, 640, 480);
+            midCamRay.transformRayToPrimitive(midCamRay, tri13Mat);
+            out.println(tri13Mat);
+            out.println(tri13Mat.m32());
+            
             
         } catch (IOException e) {
             // TODO Auto-generated catch block

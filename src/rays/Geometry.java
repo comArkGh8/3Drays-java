@@ -15,14 +15,21 @@ public class Geometry {
      * @param mulMatrix - matrix with which to multiply
      * @return - Vec3 result of matrix acting on extended vector
      */
-    public static  FixedVector mat4MultDirVec3 (Vector3fc inVector, Matrix4f mulMatrix) {
+    public static  FixedVector mat4MultDirVec3 (Vector3fc inVector, FixedMatrix4 mulMatrix) {
         // write inVector as 4Vec
         Vector4fc inVectorExtended = 
                 new Vector4f(inVector.x(), inVector.y(), inVector.z(), 0.0f);
         
+        // write mulMatrix as Matrix4f
+        Vector4fc col0 = new Vector4f(mulMatrix.m00(), mulMatrix.m01(), mulMatrix.m02(), mulMatrix.m03());
+        Vector4fc col1 = new Vector4f(mulMatrix.m10(), mulMatrix.m11(), mulMatrix.m12(), mulMatrix.m13());
+        Vector4fc col2 = new Vector4f(mulMatrix.m20(), mulMatrix.m21(), mulMatrix.m22(), mulMatrix.m23());
+        Vector4fc col3 = new Vector4f(mulMatrix.m30(), mulMatrix.m31(), mulMatrix.m32(), mulMatrix.m33());        
+        Matrix4f mulMatrix4f = new Matrix4f(col0,col1,col2,col3);
+        
         // now multiply
         Vector4f multVectorExtended = new Vector4f();
-        inVectorExtended.mul(mulMatrix, multVectorExtended);
+        inVectorExtended.mul(mulMatrix4f, multVectorExtended);
         
         // now write as 3Vec
         Vector3fc resultVector = 
@@ -40,14 +47,21 @@ public class Geometry {
      * @param mulMatrix - matrix with which to multiply
      * @return - Vec3 result of matrix acting on extended vector
      */
-    public static  FixedVector mat4MultPosVec3 (Vector3fc inVector, Matrix4f mulMatrix) {
+    public static  FixedVector mat4MultPosVec3 (Vector3fc inVector, FixedMatrix4 mulMatrix) {
         // write inVector as 4Vec
         Vector4fc inVectorExtended = 
                 new Vector4f(inVector.x(), inVector.y(), inVector.z(), 1.0f);
         
+        // write mulMatrix as Matrix4f (should write method for this!)
+        Vector4fc col0 = new Vector4f(mulMatrix.m00(), mulMatrix.m01(), mulMatrix.m02(), mulMatrix.m03());
+        Vector4fc col1 = new Vector4f(mulMatrix.m10(), mulMatrix.m11(), mulMatrix.m12(), mulMatrix.m13());
+        Vector4fc col2 = new Vector4f(mulMatrix.m20(), mulMatrix.m21(), mulMatrix.m22(), mulMatrix.m23());
+        Vector4fc col3 = new Vector4f(mulMatrix.m30(), mulMatrix.m31(), mulMatrix.m32(), mulMatrix.m33());        
+        Matrix4f mulMatrix4f = new Matrix4f(col0,col1,col2,col3);
+        
         // now multiply
         Vector4f multVectorExtended = new Vector4f();
-        inVectorExtended.mul(mulMatrix, multVectorExtended);
+        inVectorExtended.mul(mulMatrix4f, multVectorExtended);
         
         // now write as 3Vec
         Vector3fc resultVector = new Vector3f(multVectorExtended.x/multVectorExtended.w,
@@ -58,14 +72,21 @@ public class Geometry {
         return fixedResult;
     }
     
-    public static  FixedVector mat4MultPosVec3 (FixedVector inVector, Matrix4f mulMatrix) {
+    public static  FixedVector mat4MultPosVec3 (FixedVector inVector, FixedMatrix4 mulMatrix) {
         // write inVector as 4Vec
         Vector4fc inVectorExtended = 
                 new Vector4f(inVector.x(), inVector.y(), inVector.z(), 1.0f);
         
+        // write mulMatrix as Matrix4f
+        Vector4fc col0 = new Vector4f(mulMatrix.m00(), mulMatrix.m01(), mulMatrix.m02(), mulMatrix.m03());
+        Vector4fc col1 = new Vector4f(mulMatrix.m10(), mulMatrix.m11(), mulMatrix.m12(), mulMatrix.m13());
+        Vector4fc col2 = new Vector4f(mulMatrix.m20(), mulMatrix.m21(), mulMatrix.m22(), mulMatrix.m23());
+        Vector4fc col3 = new Vector4f(mulMatrix.m30(), mulMatrix.m31(), mulMatrix.m32(), mulMatrix.m33());        
+        Matrix4f mulMatrix4f = new Matrix4f(col0,col1,col2,col3);
+        
         // now multiply
         Vector4f multVectorExtended = new Vector4f();
-        inVectorExtended.mul(mulMatrix, multVectorExtended);
+        inVectorExtended.mul(mulMatrix4f, multVectorExtended);
         
         // now write as 3Vec
         Vector3fc resultVector = new Vector3f(multVectorExtended.x/multVectorExtended.w,

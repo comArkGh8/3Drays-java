@@ -55,11 +55,10 @@ public class Ray {
      * @param objMat - input the objects matrix
      * @return - the ray as if the object was not transformed to actual coordinates
      */
-    public static Ray transformRayToPrimitive(Ray ray, Matrix4fc objMat) {
+    public static Ray transformRayToPrimitive(Ray ray, FixedMatrix4 objMat) {
         
         // first get inverse matrix
-        Matrix4f objInv = new Matrix4f();
-        objMat.invert(objInv);
+        FixedMatrix4 objInv= objMat.invert();
         
         // transform start
         Vector3fc inputStartVector = new Vector3f(ray.start.x(), ray.start.y(), ray.start.z());

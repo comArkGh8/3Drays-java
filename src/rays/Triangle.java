@@ -23,7 +23,7 @@ public class Triangle extends Primitive {
             
     // creates a triangle
     public Triangle(int id, FixedVector vert1, FixedVector vert2, FixedVector vert3, List<Float> ambientList, List<Float> diffuseList, List<Float> specularList,
-            List<Float> emissionList, float shininess, Matrix4f matrixIn) {
+            List<Float> emissionList, float shininess, FixedMatrix4 matrixIn) {
         
         this.id = id;
         this.type = Shape.TRIANGLE;
@@ -79,9 +79,9 @@ public class Triangle extends Primitive {
         Vector3fc inputVector = new Vector3f(normalPrimitive.x(),normalPrimitive.y(),normalPrimitive.z());
         
         // get objMatrix
-        Matrix4f objMatrix = this.getTransformMatrix();
+        FixedMatrix4 objMatrix = this.getTransformMatrix();
         // now transform with obj matrix, transpose of inverse...
-        Matrix4f transposeInv = objMatrix.normal();
+        FixedMatrix4 transposeInv = objMatrix.normal();
         
         // now actual normal: multiply with transpose inverse
         FixedVector normalAtInterscnPt = Geometry.mat4MultDirVec3(inputVector, transposeInv);              
@@ -99,7 +99,7 @@ public class Triangle extends Primitive {
     public FixedVector rayPlaneIntersection(Ray ray){
 
         // first transform ray to primitive
-        Matrix4f objMatrix = this.getTransformMatrix();
+        FixedMatrix4 objMatrix = this.getTransformMatrix();
         Ray primitiveRay = Ray.transformRayToPrimitive(ray, objMatrix);
 
         // get planeEqnRep
@@ -145,9 +145,8 @@ public class Triangle extends Primitive {
         }
 
         // now go back to primitive space
-        Matrix4f objMatrix = this.getTransformMatrix();
-        Matrix4f invMatrix = new Matrix4f();
-        objMatrix.invert(invMatrix);        
+        FixedMatrix4 objMatrix = this.getTransformMatrix();
+        FixedMatrix4 invMatrix=  objMatrix.invert();        
         FixedVector primitiveInterPt = Geometry.mat4MultPosVec3(pointOnPlane, invMatrix);
 
         FixedVector ptToPrimTri = primitiveInterPt.subtractFixed(this.v1);
@@ -204,7 +203,7 @@ public class Triangle extends Primitive {
     
     // for unit tests
     // creates tri from just input vertices
-    public Triangle(Vector3f vert1, Vector3f vert2, Vector3f vert3, Matrix4f triMatrix) {
+    public Triangle(Vector3f vert1, Vector3f vert2, Vector3f vert3, FixedMatrix4 triMatrix) {
         this.type = Shape.TRIANGLE;
         
         this.v1 = new FixedVector(vert1);
@@ -233,7 +232,7 @@ public class Triangle extends Primitive {
     
     // for unit tests
     // creates tri from just input vertices
-    public Triangle(FixedVector vert1, FixedVector vert2, FixedVector vert3, Matrix4f triMatrix) {
+    public Triangle(FixedVector vert1, FixedVector vert2, FixedVector vert3, FixedMatrix4 triMatrix) {
         this.type = Shape.TRIANGLE;
         
         this.v1 = vert1;
