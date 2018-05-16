@@ -103,7 +103,7 @@ public class Geometry {
      * @param inVector - incoming direction vector
      * @param normalVector - normal of vector to surface (plane) on which 
      *      direction is to be reflected
-     * @return - direction (nomralized) of reflection 
+     * @return - direction (normalized) of reflection 
      */
     public static  FixedVector reflectDirectionVector (FixedVector inVector, FixedVector normalVector) {
         // write direction as d_n + d_inplane

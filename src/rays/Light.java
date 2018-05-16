@@ -39,18 +39,21 @@ public interface Light {
         for (int l=0; l<3; l++) {
             lambertArray[l] = mydiffuse.get(l) * lightcolor.get(l) * Math.abs(nDotL);
         }
+        FixedVector lambertVector = new FixedVector(lambertArray[0], lambertArray[1], lambertArray[2]);
         
-        float nDotH =  normal.dot(halfvec);
+        
+        float nDotH =  normal.dot(halfvec);        
 
         float[] phongArray;
         phongArray = new float[3];
         for (int l=0; l<3; l++) {
-            phongArray[l] = (float) (myspecular.get(l) * lightcolor.get(l) * 
-                    Math.pow (Math.abs(nDotH), myshininess));
+            phongArray[l] = (float) (myspecular.get(l) * lightcolor.get(l) * Math.pow (Math.abs(nDotH), myshininess) );            
         }
+        FixedVector phongVector = new FixedVector(phongArray[0], phongArray[1], phongArray[2]);
+
         
         // now create color with two arrays
-        FixedVector diffuseSpecularLight = Colors.getColor(lambertArray, phongArray);        
+        FixedVector diffuseSpecularLight = Colors.getColor(lambertVector, phongVector);        
         return diffuseSpecularLight ;
     }
     

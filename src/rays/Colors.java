@@ -26,14 +26,8 @@ public class Colors {
     }
     */
 
-    public static FixedVector getColor(float[] lambertArray, float[] phongArray) {
-        float[] totalArray;
-        totalArray = new float[3];
-        for (int index=0; index<3; index++) {
-            totalArray[index] = lambertArray[index] + phongArray[index];
-        }
-        
-        FixedVector totalCol = new FixedVector(totalArray[0],totalArray[1],totalArray[2]);
+    public static FixedVector getColor(FixedVector lambertVector, FixedVector phongVector) {        
+        FixedVector totalCol = lambertVector.addFixed(phongVector);
         return totalCol;
     }
 

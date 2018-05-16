@@ -187,8 +187,7 @@ public class Ray {
             if ((aLight.reaches(hitPt, validObjectsFinal) )&& rayOnCorrectSide ){
                 // compute light color
                 FixedVector lightcolor = aLight.getColor(); 
-                FixedVector halfDirectn;
-                FixedVector lightDirectionTo = null;
+                FixedVector lightDirectionTo = new FixedVector(0,0,0);
                 
                 if (aLight.getType()==Type.POINT) {
                     FixedVector ptPosn = aLight.getPosition();
@@ -201,19 +200,13 @@ public class Ray {
                 FixedVector reflectDirection = 
                         Geometry.reflectDirectionVector(lightDirectionTo, normal);
 
-                FixedVector halfDirectnRaw = reflectDirection.subtractFixed(this.direction);
-                halfDirectn = halfDirectnRaw.normalize();
+                FixedVector rayDirectionVec = this.direction.normalize();
+                FixedVector halfDirectnRaw = reflectDirection.subtractFixed(rayDirectionVec);
+                FixedVector halfDirectn = halfDirectnRaw.normalize();
                 
                 // add this to color
                 FixedVector colorCurrentLight = Light.computeLight(lightDirectionTo, lightcolor, normal, halfDirectn, mydiffuse, myspecular, myshininess);
                 FixedVector tempColor = colorSum.addFixed(colorCurrentLight);
-
-                
-                if (colorCurrentLight.x()> 1) {
-                    out.println(lightcolor.toString());
-                }
-                
-
                 
                 colorSum = new FixedVector(tempColor.x(),tempColor.y(),tempColor.z());
             }
