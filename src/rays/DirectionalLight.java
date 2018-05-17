@@ -58,7 +58,7 @@ public class DirectionalLight implements Light{
         @Override
         public FixedVector getDirectionTo() {
             FixedVector directionIn = this.lightDirection;
-            //FixedVector lightTo = directionIn.multConst(-1);
+            FixedVector lightTo = directionIn.multConst(-1);
             return directionIn.normalize();
         }
 
