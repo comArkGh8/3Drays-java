@@ -370,7 +370,7 @@ public class SceneTests {
             Primitive objHit = objectList.get(2);
             
             // since ray hits, try get color of ray
-            Color cornerColor = midTopCamRay.getRayColorFrom(objHit, hitPt, testScene1);
+            FixedVector cornerColor = midTopCamRay.getRayColorFrom(objHit, hitPt, testScene1);
             //out.println(cornerColor);
 
             

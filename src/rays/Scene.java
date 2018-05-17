@@ -42,7 +42,7 @@ public class Scene {
     public Map<Integer,Light> lightIdMapFinal;
     
     String outputName;
-    int maxDepth = GlobalConstants.maxDepth;
+    public int maxDepth;
     
     
     

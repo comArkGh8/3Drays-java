@@ -1,6 +1,8 @@
 package rays;
 
 import java.util.Collections;
+import static java.lang.System.out;
+
 import java.util.List;
 
 import org.joml.Matrix4f;
@@ -66,7 +68,6 @@ public class Sphere extends Primitive {
     
     // returns discriminant associated with primitve sphere
     // if ray points in wrong direction return -1;
-    //CHANGE TO PRIVATE!!!
     private float getDiscWith(Ray ray){
         float discriminant;
 
@@ -74,26 +75,27 @@ public class Sphere extends Primitive {
         FixedMatrix4 sphMatrix = this.getTransformMatrix();
         Ray primitiveRay = Ray.transformRayToPrimitive(ray, sphMatrix);
 
-        FixedVector rayDirn = primitiveRay.getDirectionVector();
-        FixedVector rayStart = primitiveRay.getStartVector();
+        FixedVector primRayDirn = primitiveRay.getDirectionVector();
+        FixedVector primRayStart = primitiveRay.getStartVector();
         FixedVector sphCenter = this.center;
         
         // check to see if in direction of rayDirection
-        FixedVector rayStartToCenter = sphCenter.subtractFixed(ray.getStartVector());
-        if (rayStartToCenter.dot(ray.getDirectionVector())<GlobalConstants.acceptableError) {
+        FixedVector primRayStartToCenter = sphCenter.subtractFixed(primRayStart);
+        if (primRayStartToCenter.dot(primRayDirn)<GlobalConstants.acceptableError) {
             return -1;
         }
         
         float r = this.radius;
         // quadratic eqn reads:
         // a = rayDirn^2;  b = 2 rayDirn (rayStart - sphCenter); c = (rayStart - sphCenter)^2
-        float a = rayDirn.dot(rayDirn);
-        float b = 2*( rayDirn.dot( rayStart.subtractFixed( sphCenter) ) ) ;
+        float a = primRayDirn.dot(primRayDirn);
+        float b = 2*( primRayDirn.dot( primRayStart.subtractFixed( sphCenter) ) ) ;
         // from center to ray start:
-        FixedVector centerToStart = rayStart.subtractFixed(sphCenter);
+        FixedVector centerToStart = primRayStart.subtractFixed(sphCenter);
         float c = centerToStart.dot(centerToStart) -r*r;
 
         discriminant = b*b - 4*a*c;
+
         return discriminant;
 
     }
@@ -105,7 +107,7 @@ public class Sphere extends Primitive {
         float disc = this.getDiscWith(aRay);
 
         // if disc < 0 does not
-        if (disc<GlobalConstants.acceptableError){
+        if (disc<0){
             return false;
         }
         return true;

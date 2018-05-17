@@ -53,7 +53,7 @@ public interface Light {
 
         
         // now create color with two arrays
-        FixedVector diffuseSpecularLight = Colors.getColor(lambertVector, phongVector);        
+        FixedVector diffuseSpecularLight = lambertVector.addFixed(phongVector);        
         return diffuseSpecularLight ;
     }
     

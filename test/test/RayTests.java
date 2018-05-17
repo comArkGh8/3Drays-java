@@ -9,10 +9,13 @@ import org.junit.Test;
 
 import rays.*;
 
+import java.io.File;
+import java.io.IOException;
 import java.lang.Math;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 public class RayTests {
@@ -302,6 +305,64 @@ public class RayTests {
     }
     
     
-    
+    @Test
+    public void testRayReflectsToSphere(){
+        int maxDepth = 1;
+        float error = 0.00001f;
+        GlobalConstants myConstants = new GlobalConstants(error, maxDepth);
+        
+        Optional<File> file = Optional.empty();
+        String pathNameToFile = "D:\\eclipse workspace\\3DRays-java\\submission_scenes\\scene4-diffuse.test";
+        file = Optional.of(new File(pathNameToFile));
+        assert(file.get().isFile());
+        Scene testScene4;
+        File fileToInsert = file.get();
+        try {
+            testScene4 = new Scene(fileToInsert);
+            // get objects
+            Map<Integer,Primitive> objectList = testScene4.objectIdMapFinal;
+            // get camera
+            Camera scene4Cam = testScene4.sceneCam;       
+            
+            // get ray from cam to (.9,.3,.25)
+            FixedVector testPoint = new FixedVector(1.45f, 0.67f, 0.25f);
+            FixedVector start = scene4Cam.camEye;
+            FixedVector dir = testPoint.subtractFixed(start);
+            
+            Ray camToTestPt = new Ray(start, dir);
+
+            // get ray intersection       
+            Map<Integer, FixedVector> objIdWithHit = camToTestPt.getClosestObject(objectList);
+            int objHitId = objIdWithHit.keySet().iterator().next(); 
+            // double check hitPt
+            FixedVector hitPt = objIdWithHit.get(11);
+            
+            Primitive objHit = objectList.get(11);
+            FixedVector normal = objHit.getNormalAt(hitPt);
+            // now reflect
+            FixedVector reflectDirection = Geometry.reflectDirectionVector(dir, normal);
+            
+            Ray reflectRay = new Ray(hitPt, reflectDirection);
+            // make new object list without table and see if hits sphere
+            Map<Integer, Primitive> validObjects = new HashMap();
+            for (int aKey: objectList.keySet()) {
+                if (aKey != objHitId) {
+                    validObjects.put(aKey, objectList.get(aKey));
+                }
+            }
+            
+            assertTrue("sphere should be there", validObjects.containsKey(65));
+            
+            Map<Integer, FixedVector> idHitReflect = reflectRay.getClosestObject(validObjects);
+            //out.println(idHitReflect.keySet());
+            //out.println(reflectDirection.toString());
+
+            
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        
+    }
 
 }

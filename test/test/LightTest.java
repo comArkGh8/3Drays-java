@@ -2,8 +2,11 @@ package test;
 
 import static org.junit.Assert.*;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
@@ -12,14 +15,17 @@ import static java.lang.System.out;
 
 import org.junit.Test;
 
+import rays.Camera;
 import rays.DirectionalLight;
 import rays.FixedMatrix4;
 import rays.FixedVector;
 import rays.Geometry;
+import rays.GlobalConstants;
 import rays.Light;
 import rays.PointLight;
 import rays.Primitive;
 import rays.Ray;
+import rays.Scene;
 import rays.Sphere;
 import rays.Triangle;
 
@@ -109,5 +115,66 @@ public class LightTest {
         assertFalse("dir light should not reach sphere in middle", dirLight.reaches(testHitSphereBehindTri, justTri));
         
     } 
+    
+    @Test
+    public void testLightRayReachesBack(){
+        int maxDepth = 1;
+        float error = 0.00001f;
+        GlobalConstants myConstants = new GlobalConstants(error, maxDepth);
+        
+        Optional<File> file = Optional.empty();
+        String pathNameToFile = "D:\\eclipse workspace\\3DRays-java\\submission_scenes\\scene6.test";
+        file = Optional.of(new File(pathNameToFile));
+        assert(file.get().isFile());
+        Scene testScene6;
+        File fileToInsert = file.get();
+        try {
+            testScene6 = new Scene(fileToInsert);
+            // get objects
+            Map<Integer,Primitive> objectList = testScene6.objectIdMapFinal;
+            // get camera
+            Camera scene6Cam = testScene6.sceneCam;       
+            
+            // get ray from cam to back (001 to 010)
+            FixedVector start = scene6Cam.camEye;
+            FixedVector dir = new FixedVector(0,1,-1);
+            
+            Ray camToBack = new Ray(start, dir);
+            
+            // try with camera ray
+            Ray camToBack2 =  scene6Cam.generateCamRay(200, 320, 640, 480);
+
+            // get ray intersection       
+            Map<Integer, FixedVector> objIdWithHit = camToBack2.getClosestObject(objectList);
+            int objHitId = objIdWithHit.keySet().iterator().next(); 
+            //out.println(objHitId);
+            // get objId: 9
+            Primitive bottomBox = objectList.get(9);
+            FixedVector hitPt = objIdWithHit.get(objHitId);
+            FixedVector normal = bottomBox.getNormalAt(hitPt);
+            // check if light reaches
+            Light ptLight = testScene6.lightIdMapFinal.get(1);
+            assertTrue("light reaches", ptLight.reaches(hitPt, objectList) );
+            FixedVector colorBottom = camToBack2.getRayColorFrom(bottomBox, hitPt, testScene6);
+            
+            // check side
+            boolean rayOnCorrectSide = camToBack2.rayCheckSide(hitPt, normal, ptLight);
+            //assertTrue("ray should be on same side as bottom", rayOnCorrectSide);
+            
+            assertTrue("should not be 0 color", colorBottom.length()>GlobalConstants.acceptableError);
+            
+            
+            //FixedVector hitPt = objIdWithHit.get(11);
+
+            
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        
+    }
+    
+    
+    
 
 }

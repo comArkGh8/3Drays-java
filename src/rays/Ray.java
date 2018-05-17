@@ -19,8 +19,8 @@ import rays.Light.Type;
 
 public class Ray {
     
-    private FixedVector start;
-    private FixedVector direction;
+    private final FixedVector start;
+    private final FixedVector direction;
     
     public Ray(Vector3f startVector, Vector3f directionVector) {
         
@@ -100,6 +100,8 @@ public class Ray {
      * @param aLight - light being tested
      * @return true if ray hits the lighted side, false otherwise
      */
+
+
     public boolean rayCheckSide(FixedVector hitPt, FixedVector normal, Light aLight) {
         float rayDirDotN = this.getDirectionVector().dot(normal);
         float lightDotN;
@@ -142,6 +144,7 @@ public class Ray {
         }
         
     }
+
     
     /**
      * assume ray hits object 
@@ -151,7 +154,7 @@ public class Ray {
      * @return - the color obtained from the object and lights
      */
     
-    public Color getRayColorFrom(Primitive objHit, FixedVector hitPt, Scene theScene) {
+    public FixedVector getRayColorFrom(Primitive objHit, FixedVector hitPt, Scene theScene) {
         
         FixedVector colorSum = new FixedVector(0,0,0);
         // first color from object itself
@@ -159,6 +162,9 @@ public class Ray {
         FixedVector ambientInput = objHit.ambient;
         FixedVector emissionInput = objHit.emission;
         FixedVector colorFromObj = Colors.produceColor(ambientInput, emissionInput);
+        
+        // for poin lights
+        FixedVector attenVec = new FixedVector(theScene.atten.get(0), theScene.atten.get(1), theScene.atten.get(2));
                 
         // make new list minus objHit
         Map<Integer, Primitive> allObjects = theScene.objectIdMapFinal;
@@ -178,20 +184,28 @@ public class Ray {
         FixedVector myspecular = objHit.specular;
         float myshininess = objHit.shininess;
         
+        
         // for each light....if it reaches object && if ray is on correct side
         Map<Integer, Light> allLights = theScene.lightIdMapFinal;
-        for (Light aLight : allLights.values()) {    
+        for (Light aLight : allLights.values()) {
+            float attenCoeff =1;
             // check if ray on correct side
             boolean rayOnCorrectSide = this.rayCheckSide(hitPt, normal, aLight);
             
             if ((aLight.reaches(hitPt, validObjectsFinal) )&& rayOnCorrectSide ){
                 // compute light color
                 FixedVector lightcolor = aLight.getColor(); 
+
                 FixedVector lightDirectionTo = new FixedVector(0,0,0);
                 
                 if (aLight.getType()==Type.POINT) {
                     FixedVector ptPosn = aLight.getPosition();
+                    
+                    float r = ptPosn.subtractFixed(hitPt).length();
+                    
                     lightDirectionTo = hitPt.subtractFixed(ptPosn).normalize();  
+                    attenCoeff = (float) (1.0/(attenVec.z()*r*r + attenVec.y()*r + attenVec.x() ) );
+
                 }
                 else if (aLight.getType()==Type.DIRECTIONAL) {
                     lightDirectionTo  = aLight.getDirectionTo();
@@ -203,18 +217,17 @@ public class Ray {
                 FixedVector halfDirectn = halfDirectnRaw.normalize();
                 
                 // add this to color
-                FixedVector colorCurrentLight = Light.computeLight(lightDirectionTo, lightcolor, normal, halfDirectn, mydiffuse, myspecular, myshininess);
+                FixedVector colorCurrentUnattenLight = Light.computeLight(lightDirectionTo, lightcolor, normal, halfDirectn, mydiffuse, myspecular, myshininess);
+                FixedVector colorCurrentLight = colorCurrentUnattenLight.multConst(attenCoeff);           
                 FixedVector tempColor = colorSum.addFixed(colorCurrentLight);
                 
                 colorSum = new FixedVector(tempColor.x(),tempColor.y(),tempColor.z());
+
             }
         }
                 
         FixedVector totalColorVec = colorSum.addFixed(colorFromObj);
-        
-        // now produce color from vector
-        Color totalColor = new Color(totalColorVec.x(), totalColorVec.y(), totalColorVec.z());
-        return totalColor;
+        return totalColorVec;
     }
     
     /**
@@ -233,8 +246,7 @@ public class Ray {
         // go through all objects
         // use for each KEY!!! as some (one) objects may be missing from list!
         Set<Integer> idSet= objectIdMap.keySet();
-        for (int objCount : idSet){
-            
+        for (int objCount : idSet){           
             Primitive currentObj = objectIdMap.get(objCount); 
             if (currentObj.rayHits(this) ){
                 // get distance of start of ray to hit point

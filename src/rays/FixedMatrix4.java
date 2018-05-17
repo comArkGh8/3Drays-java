@@ -63,6 +63,17 @@ public class FixedMatrix4 {
     }
     
     
+    // write a fixed matrix as matrix4f
+    public Matrix4f writeAs4f() {
+        Vector4fc col0 = new Vector4f(this.m00(), this.m01(), this.m02(), this.m03());
+        Vector4fc col1 = new Vector4f(this.m10(), this.m11(), this.m12(), this.m13());
+        Vector4fc col2 = new Vector4f(this.m20(), this.m21(), this.m22(), this.m23());
+        Vector4fc col3 = new Vector4f(this.m30(), this.m31(), this.m32(), this.m33());        
+        Matrix4f resMatrix4f = new Matrix4f(col0,col1,col2,col3);
+        
+        return resMatrix4f;
+    }
+    
     
     
     

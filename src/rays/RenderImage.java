@@ -16,10 +16,10 @@ import static java.lang.System.out;
 
 public class RenderImage {
     
-    private static Color rayTracer(Ray inRay, int missingObjectId, Scene theScene, int depth) {
+    private static FixedVector rayTracer(Ray inRay, int missingObjectId, Scene theScene, int depth) {
         
         if (depth >= GlobalConstants.maxDepth) {
-            Color blackColor = new Color(0);
+            FixedVector blackColor = new FixedVector(0,0,0);
             return blackColor;
         }
         
@@ -43,19 +43,42 @@ public class RenderImage {
         if (hitExists) {
             // get object id, hitPt
             Map<Integer, FixedVector> objIdHitPt = inRay.getClosestObject(validObjectsFinal);
-            int objHitId = objIdHitPt.keySet().iterator().next();
+            int objHitId = objIdHitPt.keySet().iterator().next();            
             FixedVector hitPt = objIdHitPt.get(objHitId);
             Primitive objHit = fullObjectList.get(objHitId);
             // get color from ray
-            // for recursion:
-            // Color colorFromRay = rayTracer(reflectRay, objHitId, theScene, depth +1);
-            Color colorFromRay = inRay.getRayColorFrom(objHit, hitPt, theScene);
-            return colorFromRay;
-            
-            
+            FixedVector colorVecFromRay = inRay.getRayColorFrom(objHit, hitPt, theScene);
+            FixedVector totalColorVec = new FixedVector(0,0,0);
+            // add to reflected ray color:
+            if (objHit.specular.length()>GlobalConstants.acceptableError) {
+                FixedVector reflectRayStart = objIdHitPt.get(objHitId);
+                FixedVector normalForReflect = objHit.getNormalAt(hitPt);
+                FixedVector reflectRayDir = Geometry.reflectDirectionVector(inRay.getDirectionVector(), normalForReflect);
+                Ray reflectRay = new Ray(reflectRayStart, reflectRayDir);
+                FixedVector colorVecFromReflectRayNoSpec = rayTracer(reflectRay, objHitId, theScene, depth +1);
+                FixedVector colorVecFromReflectRay = new FixedVector(
+                        colorVecFromReflectRayNoSpec.x() * objHit.specular.x(),
+                        colorVecFromReflectRayNoSpec.y() * objHit.specular.y(),
+                        colorVecFromReflectRayNoSpec.z() * objHit.specular.z()
+                        );
+                
+                
+                totalColorVec = colorVecFromRay.addFixed(colorVecFromReflectRay);
+            } 
+            /*
+            {
+                vec3 unit_normal = glm::normalize( hit_object->InterpolatePointNormal(hit_point) );
+                Ray reflect_ray = CreateReflectRay(ray, hit_point, unit_normal);
+                // Make a recursive call to trace the reflected ray
+                Color temp_color = Trace(reflect_ray, scene, depth+1, pixH, pixW);
+                color = color + hit_object->materials.specular * temp_color;
+            }
+            */
+
+            return totalColorVec;     
         }
         else {
-            Color blackColor = new Color(0);
+            FixedVector blackColor = new FixedVector(0,0,0);
             return blackColor;
         }
         
@@ -79,7 +102,9 @@ public class RenderImage {
                     Ray initCamRay = theSceneCamera.generateCamRay(i, j, sceneW, sceneH);
                     
                     // now rayTracer
-                    Color colorTraced = rayTracer(initCamRay,noObjId,aScene,initDepth);
+                    FixedVector colorVecTraced = rayTracer(initCamRay,noObjId,aScene,initDepth);
+                    // now produce color from vector
+                    Color colorTraced = new Color(colorVecTraced.x(), colorVecTraced.y(), colorVecTraced.z());
                     
                     // set color at i,j index with java
                     image.setRGB(j, i, colorTraced.getRGB());

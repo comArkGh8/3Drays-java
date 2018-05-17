@@ -20,12 +20,8 @@ public class Geometry {
         Vector4fc inVectorExtended = 
                 new Vector4f(inVector.x(), inVector.y(), inVector.z(), 0.0f);
         
-        // write mulMatrix as Matrix4f
-        Vector4fc col0 = new Vector4f(mulMatrix.m00(), mulMatrix.m01(), mulMatrix.m02(), mulMatrix.m03());
-        Vector4fc col1 = new Vector4f(mulMatrix.m10(), mulMatrix.m11(), mulMatrix.m12(), mulMatrix.m13());
-        Vector4fc col2 = new Vector4f(mulMatrix.m20(), mulMatrix.m21(), mulMatrix.m22(), mulMatrix.m23());
-        Vector4fc col3 = new Vector4f(mulMatrix.m30(), mulMatrix.m31(), mulMatrix.m32(), mulMatrix.m33());        
-        Matrix4f mulMatrix4f = new Matrix4f(col0,col1,col2,col3);
+        // write mulMatrix as Matrix4f      
+        Matrix4f mulMatrix4f = mulMatrix.writeAs4f();
         
         // now multiply
         Vector4f multVectorExtended = new Vector4f();
@@ -52,12 +48,8 @@ public class Geometry {
         Vector4fc inVectorExtended = 
                 new Vector4f(inVector.x(), inVector.y(), inVector.z(), 1.0f);
         
-        // write mulMatrix as Matrix4f (should write method for this!)
-        Vector4fc col0 = new Vector4f(mulMatrix.m00(), mulMatrix.m01(), mulMatrix.m02(), mulMatrix.m03());
-        Vector4fc col1 = new Vector4f(mulMatrix.m10(), mulMatrix.m11(), mulMatrix.m12(), mulMatrix.m13());
-        Vector4fc col2 = new Vector4f(mulMatrix.m20(), mulMatrix.m21(), mulMatrix.m22(), mulMatrix.m23());
-        Vector4fc col3 = new Vector4f(mulMatrix.m30(), mulMatrix.m31(), mulMatrix.m32(), mulMatrix.m33());        
-        Matrix4f mulMatrix4f = new Matrix4f(col0,col1,col2,col3);
+        // write mulMatrix as Matrix4f      
+        Matrix4f mulMatrix4f = mulMatrix.writeAs4f();
         
         // now multiply
         Vector4f multVectorExtended = new Vector4f();
@@ -77,12 +69,8 @@ public class Geometry {
         Vector4fc inVectorExtended = 
                 new Vector4f(inVector.x(), inVector.y(), inVector.z(), 1.0f);
         
-        // write mulMatrix as Matrix4f
-        Vector4fc col0 = new Vector4f(mulMatrix.m00(), mulMatrix.m01(), mulMatrix.m02(), mulMatrix.m03());
-        Vector4fc col1 = new Vector4f(mulMatrix.m10(), mulMatrix.m11(), mulMatrix.m12(), mulMatrix.m13());
-        Vector4fc col2 = new Vector4f(mulMatrix.m20(), mulMatrix.m21(), mulMatrix.m22(), mulMatrix.m23());
-        Vector4fc col3 = new Vector4f(mulMatrix.m30(), mulMatrix.m31(), mulMatrix.m32(), mulMatrix.m33());        
-        Matrix4f mulMatrix4f = new Matrix4f(col0,col1,col2,col3);
+        // write mulMatrix as Matrix4f      
+        Matrix4f mulMatrix4f = mulMatrix.writeAs4f();
         
         // now multiply
         Vector4f multVectorExtended = new Vector4f();

@@ -26,10 +26,12 @@ public class Colors {
     }
     */
 
+    /*
     public static FixedVector getColor(FixedVector lambertVector, FixedVector phongVector) {        
         FixedVector totalCol = lambertVector.addFixed(phongVector);
         return totalCol;
     }
+    */
 
     /*
     public static FixedVector add(FixedVector colorOneVec, FixedVector colorTwoVec) {
