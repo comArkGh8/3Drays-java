@@ -159,7 +159,7 @@ public class LightTest {
             
             // check side
             boolean rayOnCorrectSide = camToBack2.rayCheckSide(hitPt, normal, ptLight);
-            //assertTrue("ray should be on same side as bottom", rayOnCorrectSide);
+            assertTrue("ray should be on same side as bottom", rayOnCorrectSide);
             
             assertTrue("should not be 0 color", colorBottom.length()>GlobalConstants.acceptableError);
             

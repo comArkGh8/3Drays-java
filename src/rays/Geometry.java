@@ -4,6 +4,7 @@
 package rays;
 
 import org.joml.*;
+import static java.lang.System.out;
 
 // use for geometric calculations
 public class Geometry {
@@ -68,7 +69,6 @@ public class Geometry {
         // write inVector as 4Vec
         Vector4fc inVectorExtended = 
                 new Vector4f(inVector.x(), inVector.y(), inVector.z(), 1.0f);
-        
         // write mulMatrix as Matrix4f      
         Matrix4f mulMatrix4f = mulMatrix.writeAs4f();
         

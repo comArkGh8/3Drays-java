@@ -41,11 +41,12 @@ public class RenderImage {
         float closestHitDist = inRay.getClosestDistanceToAnyObjectAmong(validObjectsFinal);
         hitExists = closestHitDist> -0.1f;
         if (hitExists) {
-            // get object id, hitPt
+            // get object id, hitPt       
             Map<Integer, FixedVector> objIdHitPt = inRay.getClosestObject(validObjectsFinal);
             int objHitId = objIdHitPt.keySet().iterator().next();            
             FixedVector hitPt = objIdHitPt.get(objHitId);
             Primitive objHit = fullObjectList.get(objHitId);
+            
             // get color from ray
             FixedVector colorVecFromRay = inRay.getRayColorFrom(objHit, hitPt, theScene);
             FixedVector totalColorVec = new FixedVector(0,0,0);
@@ -65,16 +66,10 @@ public class RenderImage {
                 
                 totalColorVec = colorVecFromRay.addFixed(colorVecFromReflectRay);
             } 
-            /*
-            {
-                vec3 unit_normal = glm::normalize( hit_object->InterpolatePointNormal(hit_point) );
-                Ray reflect_ray = CreateReflectRay(ray, hit_point, unit_normal);
-                // Make a recursive call to trace the reflected ray
-                Color temp_color = Trace(reflect_ray, scene, depth+1, pixH, pixW);
-                color = color + hit_object->materials.specular * temp_color;
+            else {
+                totalColorVec = colorVecFromRay;
             }
-            */
-
+           
             return totalColorVec;     
         }
         else {

@@ -191,8 +191,7 @@ public class Ray {
             float attenCoeff =1;
             // check if ray on correct side
             boolean rayOnCorrectSide = this.rayCheckSide(hitPt, normal, aLight);
-            
-            if ((aLight.reaches(hitPt, validObjectsFinal) )&& rayOnCorrectSide ){
+            if ( aLight.reaches(hitPt, validObjectsFinal) && rayOnCorrectSide ){
                 // compute light color
                 FixedVector lightcolor = aLight.getColor(); 
 
@@ -218,10 +217,10 @@ public class Ray {
                 
                 // add this to color
                 FixedVector colorCurrentUnattenLight = Light.computeLight(lightDirectionTo, lightcolor, normal, halfDirectn, mydiffuse, myspecular, myshininess);
-                FixedVector colorCurrentLight = colorCurrentUnattenLight.multConst(attenCoeff);           
+                FixedVector colorCurrentLight = colorCurrentUnattenLight.multConst(attenCoeff);   
                 FixedVector tempColor = colorSum.addFixed(colorCurrentLight);
-                
-                colorSum = new FixedVector(tempColor.x(),tempColor.y(),tempColor.z());
+                           
+                colorSum = new FixedVector(tempColor.x(),tempColor.y(),tempColor.z());                
 
             }
         }

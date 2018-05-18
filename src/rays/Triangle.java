@@ -62,8 +62,12 @@ public class Triangle extends Primitive {
     
     
     private Vector4fc getPlaneEqnVector() {
+        // use n X = n P
         FixedVector normalVec = this.getNormalAt(null);
-        float RHS = normalVec.dot(this.v1);
+        // for RHS use v1 transformed:
+        FixedMatrix4 objMat = this.getTransformMatrix();
+        FixedVector vertexOnePositioned = Geometry.mat4MultPosVec3(v1, objMat);
+        float RHS = normalVec.dot(vertexOnePositioned);
         
         Vector4fc planeEqnRep = new Vector4f(normalVec.x(),normalVec.y(),normalVec.z(),RHS);
         
@@ -98,19 +102,15 @@ public class Triangle extends Primitive {
      */
     public FixedVector rayPlaneIntersection(Ray ray){
 
-        // first transform ray to primitive
-        FixedMatrix4 objMatrix = this.getTransformMatrix();
-        Ray primitiveRay = Ray.transformRayToPrimitive(ray, objMatrix);
-
         // get planeEqnRep
         Vector4fc planeEqnRep = this.getPlaneEqnVector();
         float d = planeEqnRep.w();
-        
+       
         FixedVector nVec = new FixedVector(planeEqnRep.x(), planeEqnRep.y(), planeEqnRep.z());
-        FixedVector startRay = primitiveRay.getStartVector();
-        FixedVector dirRay = primitiveRay.getDirectionVector();
+        FixedVector startRay = ray.getStartVector();
+        FixedVector dirRay = ray.getDirectionVector();
         
-        // intersection time:
+        // intersection time: (this should be actual space)
         float t = (d - nVec.dot(startRay))/(nVec.dot(dirRay));
         
         float xIntersect = startRay.x() + (dirRay.x())*t;
@@ -118,8 +118,7 @@ public class Triangle extends Primitive {
         float zIntersect = startRay.z() + (dirRay.z())*t;
         
         // make FixedVec and transform
-        Vector3fc primitiveIntersect = new Vector3f(xIntersect, yIntersect, zIntersect);
-        FixedVector actualIntersect = Geometry.mat4MultPosVec3(primitiveIntersect, objMatrix);
+        FixedVector actualIntersect = new FixedVector(xIntersect, yIntersect, zIntersect);
         
         return actualIntersect;
 

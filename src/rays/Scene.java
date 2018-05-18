@@ -246,7 +246,7 @@ public class Scene {
                             Matrix4f triMatrix = new Matrix4f();
                             matTransStack.get(triMatrix);
                             FixedMatrix4 fixedTriMatrix = new FixedMatrix4(triMatrix);
-  
+
                             // now create triangle and enter into objectMap
                             numObjects++;
                             Triangle triToAdd = new Triangle(numObjects, v1, v2, v3, 
@@ -309,7 +309,7 @@ public class Scene {
                       
                     case "rotate":
                         validinput = readvals(cmdVals, 5);
-                        if (validinput) {
+                        if (validinput) {                           
                             // values[1..3] are the axis, values[4] is the angle.
                             float rotAxisX = Float.parseFloat(cmdVals[1]);
                             float rotAxisY = Float.parseFloat(cmdVals[2]);

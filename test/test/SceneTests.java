@@ -419,7 +419,61 @@ public class SceneTests {
     
     
     
-    
+    @Test
+    public void testScene6Alt(){
+        int maxDepth = 1;
+        float error = 0.00001f;
+        GlobalConstants myConstants = new GlobalConstants(error, maxDepth);
+        
+        Optional<File> file = Optional.empty();
+        String pathNameToFile = "D:\\eclipse workspace\\3DRays-java\\test_files\\scene6-alt.test";
+        file = Optional.of(new File(pathNameToFile));
+        assert(file.get().isFile());
+        Scene testScene6Alt;
+        File fileToInsert = file.get();
+        try {
+            testScene6Alt = new Scene(fileToInsert);
+            Camera scene6Cam = testScene6Alt.sceneCam;
+            // get objects
+            Map<Integer,Primitive> objectList = testScene6Alt.objectIdMapFinal;
+            Primitive redSide = objectList.get(1);
+            Primitive greenSide = objectList.get(3);
+            
+            FixedMatrix4 redMatrix = redSide.getTransformMatrix();
+            FixedMatrix4 greenMatrix = greenSide.getTransformMatrix();
+            //out.println(redMatrix.toString());
+            //out.println(greenMatrix.toString());
+            
+            // transform centers and see where they lie
+            FixedVector origCenter = new FixedVector(0,0,-3);
+            
+            FixedVector transRedCenter = Geometry.mat4MultPosVec3(origCenter, redMatrix);
+            FixedVector transGreenCenter = Geometry.mat4MultPosVec3(origCenter, greenMatrix);
+            //out.println(transRedCenter.toString());
+            //out.println(transGreenCenter.toString());
+            // create rays from cam to (+- 2.6, 0 , -4.5) then test color
+            FixedVector redDir = transRedCenter.subtractFixed(scene6Cam.camEye);
+            FixedVector greenDir = transGreenCenter.subtractFixed(scene6Cam.camEye);
+            Ray redRay = new Ray(scene6Cam.camEye,redDir);
+            Ray greenRay = new Ray(scene6Cam.camEye,greenDir);
+            
+            // make sure redRay hits object
+            assertTrue("redRay hits", redRay.getClosestDistanceToAnyObjectAmong(objectList)>0 );
+            Map<Integer, FixedVector> redIdHitMap = redRay.getClosestObject(objectList);
+            int redId = redIdHitMap.keySet().iterator().next();
+            //assertFalse("red ray should not hit green", greenSide.rayHits(redRay));
+            
+            assertEquals("red Ray hits redSide object", 1, redId);
+            
+            out.println(redRay.getRayColorFrom(redSide, transRedCenter, testScene6Alt) );
+
+            
+            
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
 
 
 }
