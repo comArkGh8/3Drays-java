@@ -140,6 +140,36 @@ public class SceneTests {
     }
     
     @Test
+    public void testScene1GetColor(){
+        Optional<File> file = Optional.empty();
+        String pathNameToFile = "/home/sauld/computer_programming/computing_graphics/HW3Java/test_files/scene1.test";
+        file = Optional.of(new File(pathNameToFile));
+        assert(file.get().isFile());
+        Scene testScene;
+        File fileToInsert = file.get();
+        try {
+            testScene = new Scene(fileToInsert);
+            Map<Integer, Primitive> objectList = testScene.objectIdMapFinal;
+            FixedVector rayStart = new FixedVector(0,0,4);
+            FixedVector rayDir = new FixedVector (0.1f,0,-1);
+            Ray rayToCenter = new Ray(rayStart, rayDir);
+            Map<Integer, FixedVector> objIdPt= rayToCenter.getClosestObject(objectList);
+            int objId = objIdPt.keySet().iterator().next();
+            Primitive objHit = objectList.get(objId);
+            FixedVector hitPt = objIdPt.get(objId);
+            
+            FixedVector colorVec = rayToCenter.getRayColorFrom(objHit, hitPt, testScene);
+            
+            //out.println(objId);
+            //out.println(colorVec.toString());
+
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+    
+    @Test
     public void testScene6FinalLights(){
         Optional<File> file = Optional.empty();
         String pathNameToFile = "/home/sauld/computer_programming/computing_graphics/HW3Java/test_files/scene6.test";

@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import javax.imageio.ImageIO;
 
@@ -81,18 +83,24 @@ public class RenderImage {
     
     
 
-    public static void draw(Scene aScene, File outFile) throws IOException, InterruptedException {
+    public static void draw(Scene aScene, File outFile, int numThreads) throws IOException, InterruptedException {
         int initDepth = 0;   
         int noObjId = 0;
         Camera theSceneCamera = aScene.sceneCam;
         int sceneW = aScene.width;
         int sceneH = aScene.height;
+        
+        long startTime = System.currentTimeMillis();
 
         final BufferedImage image = new BufferedImage(sceneW, sceneH, BufferedImage.TYPE_INT_RGB);
+
+        ExecutorService executor = Executors.newFixedThreadPool(numThreads);
 
         try {
             for (int i = 0; i<sceneH; i++) {
                 for (int j = 0; j<sceneW; j++) {
+                    final int ii = i;
+                    final int jj = j;
                     // generate camera ray
                     Ray initCamRay = theSceneCamera.generateCamRay(i, j, sceneW, sceneH);
                     
@@ -101,12 +109,19 @@ public class RenderImage {
                     // now produce color from vector
                     Color colorTraced = new Color(colorVecTraced.x(), colorVecTraced.y(), colorVecTraced.z());
                     
-                    // set color at i,j index with java
-                    image.setRGB(j, i, colorTraced.getRGB());
+                    executor.execute(new Runnable() {
+                        public void run() {
+                            // set color at i,j index with java
+                            image.setRGB(jj, ii, colorTraced.getRGB());
+                        }                       
+                    });
+
                     
                 }
             }
+            executor.shutdown();
 
+            out.println("finished in " + (System.currentTimeMillis()-startTime) + "ms");
             // retrieve image
             ImageIO.write(image, "png", outFile);
         }

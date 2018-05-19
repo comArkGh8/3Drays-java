@@ -18,15 +18,15 @@ public class Main {
         
         // generate scene
         Optional<File> file = Optional.empty();
-        String pathNameToFile = "/home/sauld/computer_programming/computing_graphics/HW3Java/test_files/scene3.test";
-        file = Optional.of(new File(pathNameToFile));
+        file = Optional.of(new File(args[0]));
         File fileToInsert = file.get();
         Scene fileScene = new Scene(fileToInsert);
         
-        String pathNameToOutFile = "/home/sauld/computer_programming/computing_graphics/HW3Java/my_images/output.png";
-        File outFile = new File(pathNameToOutFile);
+        File outFile = new File(args[1]);
+        int numThreads = Integer.parseInt(args[2]);
+        
         try {
-            RenderImage.draw(fileScene, outFile);
+            RenderImage.draw(fileScene, outFile, numThreads);
         } catch (InterruptedException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

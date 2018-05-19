@@ -224,7 +224,7 @@ public class Ray {
 
             }
         }
-                
+
         FixedVector totalColorVec = colorSum.addFixed(colorFromObj);
         return totalColorVec;
     }
