@@ -93,6 +93,26 @@ public class SceneTests {
     }
     
     @Test
+    public void testScene7CountObj(){
+        Optional<File> file = Optional.empty();
+        String pathNameToFile = "/home/sauld/computer_programming/computing_graphics/HW3Java/test_files/scene7.test";
+        file = Optional.of(new File(pathNameToFile));
+        assert(file.get().isFile());
+        Scene testScene;
+        File fileToInsert = file.get();
+        try {
+            testScene = new Scene(fileToInsert);
+            Set<Integer> theKeys = testScene.objectIdMapFinal.keySet();
+            int number = theKeys.size();
+            assertEquals("number of objects is 92", 92, number);
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+    }
+    
+    @Test
     public void testScene1CamPos(){
         Optional<File> file = Optional.empty();
         String pathNameToFile = "/home/sauld/computer_programming/computing_graphics/HW3Java/test_files/scene1.test";

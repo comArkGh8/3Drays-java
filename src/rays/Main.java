@@ -19,8 +19,10 @@ public class Main {
         
         int maxDepth = fileScene.maxDepth;
         if (maxDepth==0) {
-            maxDepth = 1;
+            maxDepth = 5;
         }
+        
+        //maxDepth = 1;
         
         
         // set constants

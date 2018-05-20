@@ -6,11 +6,13 @@ import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import javax.imageio.ImageIO;
 
@@ -101,6 +103,13 @@ public class RenderImage {
                 for (int j = 0; j<sceneW; j++) {
                     final int ii = i;
                     final int jj = j;
+                    if (i%100 == 0 && i!=0) {
+                        int nameIndex = i/100;
+                        String updateName ="update"+nameIndex+".txt";
+                        PrintWriter writer = new PrintWriter(updateName, "UTF-8");
+                        writer.println("at height: " + i + " in " + (System.currentTimeMillis()-startTime)/1000 + "sec");
+                        writer.close();
+                    }
                     // generate camera ray
                     Ray initCamRay = theSceneCamera.generateCamRay(i, j, sceneW, sceneH);
                     
@@ -120,10 +129,14 @@ public class RenderImage {
                 }
             }
             executor.shutdown();
+            executor.awaitTermination(5, TimeUnit.MINUTES);
 
             out.println("finished in " + (System.currentTimeMillis()-startTime) + "ms");
             // retrieve image
             ImageIO.write(image, "png", outFile);
+            PrintWriter writer = new PrintWriter("updateLast", "UTF-8");
+            writer.println("at height: " + " in " + (System.currentTimeMillis()-startTime)/3600000 + "hr");
+            writer.close();
         }
         catch (IOException e) {
         }
