@@ -4,9 +4,14 @@ package rays;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -91,6 +96,8 @@ public class RenderImage {
         Camera theSceneCamera = aScene.sceneCam;
         int sceneW = aScene.width;
         int sceneH = aScene.height;
+
+
         
         long startTime = System.currentTimeMillis();
 
@@ -99,16 +106,18 @@ public class RenderImage {
         ExecutorService executor = Executors.newFixedThreadPool(numThreads);
 
         try {
+            // for updates
+            PrintWriter writer = new PrintWriter("update.txt", "UTF-8");
+            
             for (int i = 0; i<sceneH; i++) {
                 for (int j = 0; j<sceneW; j++) {
                     final int ii = i;
                     final int jj = j;
-                    if (i%100 == 0 && i!=0) {
-                        int nameIndex = i/100;
-                        String updateName ="update"+nameIndex+".txt";
-                        PrintWriter writer = new PrintWriter(updateName, "UTF-8");
-                        writer.println("at height: " + i + " in " + (System.currentTimeMillis()-startTime)/1000 + "sec");
-                        writer.close();
+                    if (i%100 == 0 && i!=0 && j==0) {
+                        String toAdd = "at height: " + i + " in " + (System.currentTimeMillis()-startTime)/1000
+                                + "sec" + "\n";
+                        Files.write(Paths.get("update.txt"), toAdd.getBytes(), StandardOpenOption.APPEND);
+                        
                     }
                     // generate camera ray
                     Ray initCamRay = theSceneCamera.generateCamRay(i, j, sceneW, sceneH);
@@ -129,13 +138,13 @@ public class RenderImage {
                 }
             }
             executor.shutdown();
-            executor.awaitTermination(5, TimeUnit.MINUTES);
+            executor.awaitTermination(15, TimeUnit.MINUTES);
 
             out.println("finished in " + (System.currentTimeMillis()-startTime) + "ms");
             // retrieve image
             ImageIO.write(image, "png", outFile);
-            PrintWriter writer = new PrintWriter("updateLast", "UTF-8");
-            writer.println("at height: " + " in " + (System.currentTimeMillis()-startTime)/3600000 + "hr");
+            String toAdd = "ended " + " in " + (System.currentTimeMillis()-startTime)/3600000.0 + "hr";
+            Files.write(Paths.get("update.txt"), toAdd.getBytes(), StandardOpenOption.APPEND);
             writer.close();
         }
         catch (IOException e) {
