@@ -113,22 +113,27 @@ public class RenderImage {
                 for (int j = 0; j<sceneW; j++) {
                     final int ii = i;
                     final int jj = j;
-                    if (i%100 == 0 && i!=0 && j==0) {
-                        String toAdd = "at height: " + i + " in " + (System.currentTimeMillis()-startTime)/1000
-                                + "sec\r\n";
-                        Files.write(Paths.get(updateLoc), toAdd.getBytes(), StandardOpenOption.APPEND);
-                        
-                    }
-                    // generate camera ray
-                    Ray initCamRay = theSceneCamera.generateCamRay(i, j, sceneW, sceneH);
-                    
-                    // now rayTracer
-                    FixedVector colorVecTraced = rayTracer(initCamRay,noObjId,aScene,initDepth);
-                    // now produce color from vector
-                    Color colorTraced = new Color(colorVecTraced.x(), colorVecTraced.y(), colorVecTraced.z());
-                    
+
+                   
                     executor.execute(new Runnable() {
-                        public void run() {
+                        public void run() {       
+                            if (ii%100 == 0 && ii!=0 && jj==0) {
+                                String toAdd = "at height: " + ii + " in " + (System.currentTimeMillis()-startTime)/1000
+                                        + "sec\r\n";
+                                try {
+                                    Files.write(Paths.get(updateLoc), toAdd.getBytes(), StandardOpenOption.APPEND);
+                                } catch (IOException e) {
+                                    // TODO Auto-generated catch block
+                                    e.printStackTrace();
+                                }                               
+                            }
+                            
+                            // generate camera ray
+                            Ray initCamRay = theSceneCamera.generateCamRay(ii, jj, sceneW, sceneH);
+                            // now rayTracer
+                            FixedVector colorVecTraced = rayTracer(initCamRay,noObjId,aScene,initDepth);
+                            // now produce color from vector
+                            Color colorTraced = new Color(colorVecTraced.x(), colorVecTraced.y(), colorVecTraced.z());         
                             // set color at i,j index with java
                             image.setRGB(jj, ii, colorTraced.getRGB());
                         }                       

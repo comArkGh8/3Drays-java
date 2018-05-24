@@ -24,7 +24,6 @@ public class Main {
             maxDepth = 5;
         }
         
-        maxDepth = 1;
         
         float error = 0.0000000001f;
         GlobalConstants myConstants = new GlobalConstants(error, maxDepth);
