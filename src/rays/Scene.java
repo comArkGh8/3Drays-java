@@ -96,10 +96,11 @@ public class Scene {
         try(BufferedReader bufRead = new BufferedReader(new FileReader(fileToRead))){
 
             String myLine = null;
-            String[] cmdVals;                     
+            String[] cmdVals;    
+            boolean stop = false;
             
             // now read the lines
-            while ((myLine = bufRead.readLine()) !=null ){
+            while ((myLine = bufRead.readLine()) !=null  && !stop){
                 myLine.trim();
                 cmdVals = myLine.split("\\s+");
                 String cmd = cmdVals[0];
@@ -377,7 +378,12 @@ public class Scene {
                         }
                         break;
                     
+                        
+                    case "stop":
+                        stop = true;   
+                        break;
                     }
+
 
                 }
                 

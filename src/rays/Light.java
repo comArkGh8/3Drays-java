@@ -42,7 +42,7 @@ public interface Light {
         FixedVector lambertVector = new FixedVector(lambertArray[0], lambertArray[1], lambertArray[2]);
         
         
-        float nDotH =  normal.dot(halfvec);        
+        float nDotH =  normal.dot(halfvec);    
 
         float[] phongArray;
         phongArray = new float[3];
